@@ -230,13 +230,15 @@ Route.group(() => {
 Route.group(() => {
   Route.get("", "OrderPhController.index");
   Route.post("", "OrderPhController.store");
-  // Route.get("/:id", "SelectFoodController.show");
+    // Route.get("/:id", "SelectFoodController.show");
   // Route.put("/:id", "SelectFoodController.update");
   // Route.delete("/:id", "SelectFoodController.destroy");
-}).prefix("/order-ph");
+}).prefix("/order-ph").middleware(["auth"]);
 
 Route.group(() => {
   Route.post('create-customer', 'CustomerController.create').middleware(['auth']) 
 }).prefix('/customer')
+
+Route.get('/orders/date-range', 'OrderPhController.getOrdersByDateRange')
 
 Route.get("/seller-names-sync-data", "SellerNameController.syncData");

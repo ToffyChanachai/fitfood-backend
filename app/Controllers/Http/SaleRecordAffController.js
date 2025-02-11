@@ -19,7 +19,6 @@ class SaleRecordAffController {
       "discount",
       "extra_charge",
       "extra_charge_price",
-
       "payment_status",
       "paid_date",
       "payment_type_id",
@@ -32,27 +31,33 @@ class SaleRecordAffController {
       "zone3_quantity",
       "zone_outsource_id",
       "zone_outsource_quantity",
-
       "add_detail",
       "add_price",
       "additional_type_id",
-
       "receive_food_id",
       "select_food_id",
       "delivery_round_id",
       "note",
+      "free_mad", // จำนวนที่แถม
+      "free_dessert",
+      "free_brittles",
+      "free_energy_balls",
+      "free_dressing",
+      "free_yoghurt",
+      "free_granola"
     ]);
-
+  
     try {
       const customer = await Customer.find(saleData.customer_id);
       if (!customer) {
         return response.status(404).json({ message: "Customer not found" });
       }
+  
       saleData.promotion_type_id = saleData.promotion_type_id || null;
       saleData.program_id = saleData.program_id || null;
       saleData.package_id = saleData.package_id || null;
       saleData.start_date = saleData.start_date || null;
-
+  
       if (saleData.package_id) {
         const packageData = await Package.find(saleData.package_id);
         if (!packageData) {
@@ -60,16 +65,24 @@ class SaleRecordAffController {
           saleData.expiry_date = null;
           saleData.remaining_days = 0;
         } else {
+          // บวกจำนวนที่แถมจาก saleData กับ packageData
+          saleData.mad = (packageData.free_mad || 0) + (saleData.free_mad || 0);
+          saleData.dessert = (packageData.free_dessert || 0) + (saleData.free_dessert || 0);
+          saleData.brittles = (packageData.free_brittles || 0) + (saleData.free_brittles || 0);
+          saleData.energy_balls = (packageData.free_energy_balls || 0) + (saleData.free_energy_balls || 0);
+          saleData.dressing = (packageData.free_dressing || 0) + (saleData.free_dressing || 0);
+          saleData.yoghurt = (packageData.free_yoghurt || 0) + (saleData.free_yoghurt || 0);
+          saleData.granola = (packageData.free_granola || 0) + (saleData.free_granola || 0);
+  
           const price = parseFloat(packageData.price);
           const extraChargePercent = parseFloat(saleData.extra_charge || 0);
           const discount = parseFloat(saleData.discount || 0);
           const extraChargePrice = (price * extraChargePercent) / 100;
-          saleData.extra_charge_price = extraChargePrice; // เก็บค่าของ extra_charge_price
-
-          // คำนวณ total_package_price
-          saleData.package_price = price; // เก็บราคาแพ็คเกจ
+          saleData.extra_charge_price = extraChargePrice;
+  
+          saleData.package_price = price;
           saleData.total_package_price = price + extraChargePrice - discount;
-
+  
           const startDate = DateTime.fromISO(saleData.start_date);
           const expiryDate = startDate.plus({
             days: packageData.package_validity,
@@ -78,103 +91,78 @@ class SaleRecordAffController {
           const remainingDays = expiryDate
             .diff(currentDate, "days")
             .toObject().days;
-
+  
           saleData.expiry_date = expiryDate.toISODate();
           saleData.remaining_days = Math.ceil(remainingDays);
         }
       } else {
-        const addPrice = parseFloat(saleData.add_price || 0); // ดึงค่า add_price
-        const extraChargePercent = parseFloat(saleData.extra_charge || 0); // ดึงเปอร์เซ็นต์ extra charge (เช่น 10)
-        const discount = parseFloat(saleData.discount || 0); // ดึงส่วนลด
-
+        const addPrice = parseFloat(saleData.add_price || 0);
+        const extraChargePercent = parseFloat(saleData.extra_charge || 0);
+        const discount = parseFloat(saleData.discount || 0);
+  
         const extraChargePrice = (addPrice * extraChargePercent) / 100;
-        saleData.extra_charge_price = extraChargePrice; // เก็บค่าของ extra_charge_price
-        saleData.total_package_price = addPrice + extraChargePrice - discount; // คำนวณราคา
-
+        saleData.extra_charge_price = extraChargePrice;
+        saleData.total_package_price = addPrice + extraChargePrice - discount;
+  
         saleData.expiry_date = null;
         saleData.remaining_days = 0;
       }
-
-      let zone1Price = 0;
-      let zone1Quantity = parseInt(saleData.zone1_quantity, 10) || 0;
+  
+      // คำนวณราคาจากโซนต่าง ๆ (zone1, zone2, zone3, zoneOutsource)
       let totalZone1Price = 0;
-
+      let zone1Quantity = parseInt(saleData.zone1_quantity, 10) || 0;
       if (saleData.zone1_id) {
         const zone1 = await ZoneDelivery.find(saleData.zone1_id);
         if (zone1) {
-          zone1Price = parseFloat(zone1.price) || 0;
-        } else {
-          zone1Price = 0;
+          const zone1Price = parseFloat(zone1.price) || 0;
+          totalZone1Price = zone1Price * zone1Quantity;
         }
       }
-      totalZone1Price = zone1Price * zone1Quantity;
       saleData.total_zone1_price = totalZone1Price;
-
-      let zone2Price = 0;
-      let zone2Quantity = parseInt(saleData.zone2_quantity, 10) || 0;
+  
       let totalZone2Price = 0;
-
+      let zone2Quantity = parseInt(saleData.zone2_quantity, 10) || 0;
       if (saleData.zone2_id) {
         const zone2 = await ZoneDelivery.find(saleData.zone2_id);
         if (zone2) {
-          zone2Price = parseFloat(zone2.price) || 0;
-        } else {
-          zone2Price = 0;
+          const zone2Price = parseFloat(zone2.price) || 0;
+          totalZone2Price = zone2Price * zone2Quantity;
         }
       }
-      totalZone2Price = zone2Price * zone2Quantity;
       saleData.total_zone2_price = totalZone2Price;
-
-      let zone3Price = 0;
-      let zone3Quantity = parseInt(saleData.zone3_quantity, 10) || 0;
+  
       let totalZone3Price = 0;
-
+      let zone3Quantity = parseInt(saleData.zone3_quantity, 10) || 0;
       if (saleData.zone3_id) {
         const zone3 = await ZoneDelivery.find(saleData.zone3_id);
         if (zone3) {
-          zone3Price = parseFloat(zone3.price) || 0;
-        } else {
-          zone3Price = 0;
+          const zone3Price = parseFloat(zone3.price) || 0;
+          totalZone3Price = zone3Price * zone3Quantity;
         }
       }
-      totalZone3Price = zone3Price * zone3Quantity;
       saleData.total_zone3_price = totalZone3Price;
-
-      let zoneOutsourcePrice = 0;
-      let zoneOutsourceQuantity =
-        parseInt(saleData.zone_outsource_quantity, 10) || 0;
+  
       let totalZoneOutsourcePrice = 0;
-
+      let zoneOutsourceQuantity = parseInt(saleData.zone_outsource_quantity, 10) || 0;
       if (saleData.zone_outsource_id) {
-        const zoneOutsource = await ZoneDelivery.find(
-          saleData.zone_outsource_id
-        );
+        const zoneOutsource = await ZoneDelivery.find(saleData.zone_outsource_id);
         if (zoneOutsource) {
-          zoneOutsourcePrice = parseFloat(zoneOutsource.price) || 0;
-        } else {
-          zoneOutsourcePrice = 0;
+          const zoneOutsourcePrice = parseFloat(zoneOutsource.price) || 0;
+          totalZoneOutsourcePrice = zoneOutsourcePrice * zoneOutsourceQuantity;
         }
       }
-      totalZoneOutsourcePrice = zoneOutsourcePrice * zoneOutsourceQuantity;
       saleData.total_zone_outsource_price = totalZoneOutsourcePrice;
-
-      let totalDeliveryZonePrice =
-        totalZone1Price + totalZone2Price + totalZone3Price;
-      saleData.total_delivery_zone_price = totalDeliveryZonePrice;
-
-      let totalDeliveryPrice =
-        totalZone1Price +
-        totalZone2Price +
-        totalZone3Price +
-        totalZoneOutsourcePrice;
+  
+      // คำนวณราคาทั้งหมด
+      let totalDeliveryPrice = totalZone1Price + totalZone2Price + totalZone3Price + totalZoneOutsourcePrice;
       saleData.total_delivery_price = totalDeliveryPrice;
-
-      let totalPrice =
-        saleData.total_package_price + saleData.total_delivery_price;
+  
+      let totalPrice = saleData.total_package_price + saleData.total_delivery_price;
       saleData.total_price = totalPrice;
-
+  
+      // บันทึกข้อมูลการขาย
       const saleRecord = await SaleRecordAff.create(saleData);
-
+  
       return response.status(201).json({
         message: "บันทึกการขายสำเร็จ",
         data: saleRecord,
@@ -187,6 +175,7 @@ class SaleRecordAffController {
       });
     }
   }
+  
 
   async index({ response }) {
     try {
