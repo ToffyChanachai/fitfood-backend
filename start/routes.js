@@ -228,6 +228,29 @@ Route.group(() => {
 }).prefix("setup-menu-ph");
 
 Route.group(() => {
+  Route.get("/", "SetupMenuHhbController.index");
+  Route.post("/", "SetupMenuHhbController.store");
+  Route.put("/:id", "SetupMenuHhbController.update");
+  Route.delete("/:id", "SetupMenuHhbController.destroy");
+
+  Route.get(
+    "get-menu-date/:date",
+    "SetupMenuHhbController.getDayOfWeekFromDate"
+  );
+  Route.get("/menus-by-day/:date", "SetupMenuHhbController.getMenusByDay");
+  Route.get("/menus-today", "SetupMenuHhbController.getMenusByToDay");
+
+  Route.post("set-start-date", "SetupMenuHhbController.setStartDate");
+  Route.get("get-start-date", async ({ response }) => {
+    const controller = new (use(
+      "App/Controllers/Http/SetupMenuHhbController"
+    ))();
+    const startDate = await controller.getStartDate();
+    return response.json({ startDate });
+  });
+}).prefix("setup-menu-hhb");
+
+Route.group(() => {
   Route.get("", "OrderPhController.index");
   Route.post("", "OrderPhController.store");
     // Route.get("/:id", "SelectFoodController.show");

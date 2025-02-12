@@ -43,7 +43,6 @@ class SetupMenuPhController {
     }
   }
   
-
   async store({ request, response }) {
     const { day_of_week, menus } = request.only(["day_of_week", "menus"]);
 
@@ -141,7 +140,6 @@ class SetupMenuPhController {
   
     return dateToShow.toISO(); // ส่งคืนวันที่ในรูปแบบ ISO
   }
-  
 
   async getMenusByDay({ params, response }) {
     try {
