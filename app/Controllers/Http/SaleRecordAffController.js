@@ -107,6 +107,10 @@ class SaleRecordAffController {
         saleData.expiry_date = null;
         saleData.remaining_days = 0;
       }
+
+      saleData.total_boxes = (saleData.mad || 0) + (saleData.dessert || 0) + (saleData.brittles || 0) + 
+      (saleData.energy_balls || 0) + (saleData.dressing || 0) + 
+      (saleData.yoghurt || 0) + (saleData.granola || 0);
   
       // คำนวณราคาจากโซนต่าง ๆ (zone1, zone2, zone3, zoneOutsource)
       let totalZone1Price = 0;

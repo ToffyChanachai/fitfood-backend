@@ -39,18 +39,18 @@ Route.group(() => {
 Route.get('check-user-registration', 'TestCustomerController.checkUserRegistration').middleware(['auth']);
 
 
-Route.get('/test-hash', async ({ response }) => {
-  const Hash = use('Hash')
-  const password = 'password123'
+  // Route.get('/test-hash', async ({ response }) => {
+  //   const Hash = use('Hash')
+  //   const password = 'password123'
 
-  const hashedPassword = await Hash.make(password)
-  console.log('Hashed password:', hashedPassword)
+  //   const hashedPassword = await Hash.make(password)
+  //   console.log('Hashed password:', hashedPassword)
 
-  return response.send({
-    message: 'Password hashed successfully',
-    hashedPassword
-  })
-})
+  //   return response.send({
+  //     message: 'Password hashed successfully',
+  //     hashedPassword
+  //   })
+  // })
 
 Route.get("/sync-google-sheet", "CustomerController.syncData");
 // Route.get("customers", "CustomerController.getCustomers");
@@ -166,6 +166,10 @@ Route.group(() => {
   Route.get("/:id", "MenuController.show");
   Route.put("/:id", "MenuController.update");
   Route.delete("/:id", "MenuController.destroy");
+
+  Route.get("/uploads/*", async ({ response, params }) => {
+    return response.download(Application.tmpPath("uploads", params[0]));
+  });
 }).prefix("/menus");
 
 Route.group(() => {

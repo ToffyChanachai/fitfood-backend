@@ -8,6 +8,15 @@ class OrderPh extends Model {
     return this.belongsTo("App/Models/Menu");
   }
 
+  mealType () {
+    return this.belongsTo('App/Models/MealType')
+  }
+
+  menuType () {
+    return this.belongsTo('App/Models/MenuType')
+  }
+
+
   static get table () {
     return 'orders_phs'  // ถ้าคุณใช้ชื่ออื่นในฐานข้อมูล
   }

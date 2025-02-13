@@ -29,6 +29,7 @@
     "@adonisjs/validator": "^5.1.0",
     "adonis-fold": "^3.0.3",
     "adonis-validation-provider": "^3.0.5",
+    "fs-extra": "^11.3.0",
     "googleapis": "^144.0.0",
     "luxon": "^3.5.0",
     "pg": "^8.13.1"

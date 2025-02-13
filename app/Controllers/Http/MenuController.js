@@ -5,6 +5,10 @@ const MealType = use("App/Models/MealType");
 const Database = use("Database");
 const GoogleSheetService = require("../../Services/CustomersGoogleSheetService");
 
+const fs = require("fs-extra");
+const path = require("path");
+const Helpers = use("Helpers");
+
 class MenuController {
   async store({ request, response }) {
     const data = request.only([
@@ -25,29 +29,36 @@ class MenuController {
         .json({ message: "ไม่พบข้อมูล Meal type ที่เกี่ยวข้อง" });
     }
 
-    const menu = await Menu.create(data);
-    await menu.load("mealType.menuType");
-    return response.status(201).json(menu);
-  }
+    // ตรวจสอบและจัดการกับรูปภาพที่อัปโหลด
+    const image = request.file("image", {
+      types: ["image"],
+      size: "2mb",
+    });
 
-  async index({ response }) {
-    const menus = await Menu.query().with("mealType.menuType").fetch();
+    if (image) {
+      // สร้างชื่อไฟล์ใหม่และบันทึกไฟล์
+      const imageName = `${new Date().getTime()}_${image.clientName}`;
+      await image.move(Helpers.publicPath("images"), {
+        name: imageName,
+        overwrite: true,
+      });
 
-    return response.json(menus);
-  }
+      // หากการย้ายไฟล์สำเร็จ, อัปเดต URL รูปภาพ
+      if (!image.moved()) {
+        return response.status(400).json({ message: image.error().message });
+      }
 
-  async show({ params, response }) {
-    const menu = await Menu.query()
-      .where("id", params.id)
-      .with("mealType.menuType")
-      .first();
-
-    if (!menu) {
-      return response.status(404).json({ message: "ไม่พบข้อมูล Menu" });
+      // เพิ่มข้อมูลชื่อไฟล์รูปภาพใน data
+      data.image = imageName; // เก็บชื่อไฟล์รูปภาพในคอลัมน์ 'image'
     }
 
-    return response.json(menu);
-  }
+    // สร้างข้อมูลเมนูใหม่ในฐานข้อมูล
+    const menu = await Menu.create(data);
+    await menu.load("mealType.menuType");
+
+    return response.status(201).json(menu);
+}
+
 
   async update({ params, request, response }) {
     const menu = await Menu.find(params.id);
@@ -75,8 +86,51 @@ class MenuController {
         .json({ message: "ไม่พบข้อมูล Meal type ที่เกี่ยวข้อง" });
     }
 
+    // ตรวจสอบและจัดการกับรูปภาพที่อัปโหลด
+    const image = request.file("image", {
+      types: ["image"],
+      size: "2mb",
+    });
+
+    if (image) {
+      // สร้างชื่อไฟล์ใหม่และบันทึกไฟล์
+      const imageName = `${new Date().getTime()}_${image.clientName}`;
+      await image.move(Helpers.publicPath("images"), {
+        name: imageName,
+        overwrite: true,
+      });
+
+      // หากการย้ายไฟล์สำเร็จ, อัปเดต URL รูปภาพ
+      if (!image.moved()) {
+        return response.status(400).json({ message: image.error().message });
+      }
+
+      // เพิ่มข้อมูลชื่อไฟล์รูปภาพใน menu
+      data.image = imageName; // เก็บชื่อไฟล์รูปภาพในคอลัมน์ 'image'
+    }
+
+    // อัปเดตข้อมูลในเมนู
     menu.merge(data);
     await menu.save();
+
+    return response.json(menu);
+  }
+
+  async index({ response }) {
+    const menus = await Menu.query().with("mealType.menuType").fetch();
+
+    return response.json(menus);
+  }
+
+  async show({ params, response }) {
+    const menu = await Menu.query()
+      .where("id", params.id)
+      .with("mealType.menuType")
+      .first();
+
+    if (!menu) {
+      return response.status(404).json({ message: "ไม่พบข้อมูล Menu" });
+    }
 
     return response.json(menu);
   }
