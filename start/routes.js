@@ -255,17 +255,23 @@ Route.group(() => {
 }).prefix("setup-menu-hhb");
 
 Route.group(() => {
-  Route.get("", "OrderPhController.index");
-  Route.post("", "OrderPhController.store");
+  Route.get("", "OrderController.index");
+  Route.post("", "OrderController.store");
     // Route.get("/:id", "SelectFoodController.show");
   // Route.put("/:id", "SelectFoodController.update");
   // Route.delete("/:id", "SelectFoodController.destroy");
-}).prefix("/order-ph").middleware(["auth"]);
+}).prefix("/order").middleware(["auth"]);
 
 Route.group(() => {
   Route.post('create-customer', 'CustomerController.create').middleware(['auth']) 
 }).prefix('/customer')
 
-Route.get('/orders/date-range', 'OrderPhController.getOrdersByDateRange')
+Route.get('/orders/date-range', 'OrderController.getOrdersByDateRange')
+Route.put(
+  "/order/:id/status",
+  "OrderController.updateStatus"
+);
+Route.post("/order/update-status", "OrderController.updateMultipleStatus");
+
 
 Route.get("/seller-names-sync-data", "SellerNameController.syncData");

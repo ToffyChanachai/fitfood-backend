@@ -18,7 +18,7 @@ class OrderPh extends Model {
 
 
   static get table () {
-    return 'orders_phs'  // ถ้าคุณใช้ชื่ออื่นในฐานข้อมูล
+    return 'orders'  // ถ้าคุณใช้ชื่ออื่นในฐานข้อมูล
   }
 }
 
