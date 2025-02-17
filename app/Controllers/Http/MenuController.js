@@ -215,23 +215,83 @@ class MenuController {
   //   }
   // }
 
+  // async syncData({ response }) {
+  //   const sheetId = "1bHJ5LWx-4kkn5vcbmR5N8ihQwDQI4XbkrKepd9offEA";
+  //   const range = "AllMenuHHB!B1:I";
+
+  //   try {
+  //     const sheetData = await GoogleSheetService.getSheetData(sheetId, range);
+  //     //await Database.raw("TRUNCATE TABLE menus RESTART IDENTITY CASCADE");
+
+  //     const mealTypeMap = {
+  //       "Main - Chicken": 22,
+  //       "Main - Salmon": 23,
+  //       "Main - Sea Bass": 24,
+  //       "Main - Dory": 25,
+  //       "Main - Duck": 26,
+  //       "Main - Vegetarian": 27,
+  //       "Main - Vegan (J)": 28,
+  //       Appetizer: 29,
+  //     };
+
+  //     const formattedData = sheetData.slice(1).map((row) => {
+  //       const menu_code = row[1];
+  //       const name_english = row[2];
+  //       const name_thai = row[3];
+  //       const mealTypeText = row[0];
+  //       const meal_type_id = mealTypeMap[mealTypeText.trim()] || null;
+  //       const cal = row[4] ? parseInt(row[4].match(/\d+/)?.[0] || "0", 10) : 0;
+  //       const protein = row[5];
+  //       const fat = row[6];
+  //       const carb = row[7];
+
+  //       return {
+  //         menu_code,
+  //         name_english,
+  //         name_thai,
+  //         meal_type_id,
+  //         cal,
+  //         protein,
+  //         fat,
+  //         carb,
+  //       };
+  //     });
+
+  //     await Database.table("menus").insert(formattedData);
+
+  //     return response
+  //       .status(200)
+  //       .send({ message: "Data synchronized successfully!" });
+  //   } catch (error) {
+  //     console.error("Error syncing data:", error);
+  //     return response
+  //       .status(500)
+  //       .send({ error: "Failed to sync data", details: error.message });
+  //   }
+  // }
+
   async syncData({ response }) {
     const sheetId = "1bHJ5LWx-4kkn5vcbmR5N8ihQwDQI4XbkrKepd9offEA";
-    const range = "AllMenuHHB!B1:I";
+    const range = "AllMenuATโรคไขมัน!B1:I";
 
     try {
       const sheetData = await GoogleSheetService.getSheetData(sheetId, range);
       //await Database.raw("TRUNCATE TABLE menus RESTART IDENTITY CASCADE");
 
       const mealTypeMap = {
-        "Main - Chicken": 22,
-        "Main - Salmon": 23,
-        "Main - Sea Bass": 24,
-        "Main - Dory": 25,
-        "Main - Duck": 26,
-        "Main - Vegetarian": 27,
-        "Main - Vegan (J)": 28,
-        Appetizer: 29,
+        "Appetizer - Chicken": 72,
+        "Appetizer - Salmon": 73,
+        "Appetizer - Sea Bass": 74,
+        "Appetizer - Seafood": 75,       
+        "Appetizer - Vegetarian": 76,
+        "Main - Asian Breakfast": 77,
+        "Main - Chicken": 78,
+        "Main - Salmon": 79,
+        "Main - Sea Bass": 80,
+        "Main - Seafood": 81,
+        "Main - Vegetarian": 82,
+        "Main - Western Breakfast": 83,
+
       };
 
       const formattedData = sheetData.slice(1).map((row) => {
@@ -269,6 +329,7 @@ class MenuController {
         .send({ error: "Failed to sync data", details: error.message });
     }
   }
+
 }
 
 module.exports = MenuController;

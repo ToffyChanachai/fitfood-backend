@@ -83,7 +83,7 @@ class MealTypeController {
 
   async syncData({ response }) {
     const sheetId = "1bHJ5LWx-4kkn5vcbmR5N8ihQwDQI4XbkrKepd9offEA";
-    const range = "AllMenuHHB!B1:B";
+    const range = "AllMenuATโรคไขมัน!B1:B";
 
     const nameSet = new Set(); // ใช้ Set เพื่อจัดการกับค่าที่ไม่ซ้ำกัน
     const uniqueData = []; //
@@ -97,7 +97,7 @@ class MealTypeController {
 
         return {
           name,
-          menu_type_id: 2,
+          menu_type_id: 17,
         };
       });
 

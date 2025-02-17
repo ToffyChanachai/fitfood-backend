@@ -61,22 +61,17 @@ class OrderController {
     const { status } = request.only(["status"]);
   
     try {
-      // ค้นหา Order ตาม ID
       const order = await Order.find(params.id);
       if (!order) {
         return response
           .status(404)
           .json({ message: "ไม่พบข้อมูลบันทึกยอดขาย" });
-      }
-  
-      // ดึงข้อมูล user
+      }  
       const user = await auth.getUser();
       const customer = await Customer.query().where("user_id", user.id).first();
       if (!customer) {
         return response.status(404).json({ message: "Customer not found" });
       }
-  
-      // ค้นหาบันทึกยอดขายที่เชื่อมโยงกับ customer_id
       let saleRecord = await SaleRecordAff.query()
         .where("customer_id", customer.id)
         .orderBy("id", "asc") // จัดเรียงตาม ID เพื่อให้ได้บันทึกแรก
@@ -85,8 +80,6 @@ class OrderController {
       if (!saleRecord) {
         return response.status(404).json({ message: "Sale record not found" });
       }
-  
-      // ตรวจสอบว่า total_boxes เป็น 0 หรือไม่
       while (saleRecord.total_boxes === 0) {
         saleRecord = await SaleRecordAff.query()
           .where("customer_id", customer.id)
@@ -106,13 +99,9 @@ class OrderController {
       if (order.status === "pending" && status === "confirm") {
         saleRecord.total_boxes -= order.quantity; // ลด quantity
       }
-  
-      // บันทึกการเปลี่ยนแปลงใน saleRecord
       await saleRecord.save();
   
-      // ถ้าสถานะเป็น "pending", ให้ตั้งค่า sale_record_id เป็น null
       if (status === "pending") {
-        // คืนค่า total_boxes ของ sale_record_id นั้น
         const originalSaleRecord = await SaleRecordAff.find(order.sale_record_id);
         if (originalSaleRecord) {
           originalSaleRecord.total_boxes += order.quantity; // คืนค่า total_boxes
@@ -120,7 +109,6 @@ class OrderController {
         }
         order.sale_record_id = null;
       } else {
-        // ถ้าสถานะไม่เป็น "pending", ให้ตั้งค่า sale_record_id ตามที่คำนวณ
         order.sale_record_id = saleRecord.id;
       }
   
@@ -141,7 +129,6 @@ class OrderController {
     }
   }
   
-
   async updateMultipleStatus({ request, response, auth }) {
     const { order_ids, status } = request.only(["order_ids", "status"]);
   
@@ -222,16 +209,6 @@ class OrderController {
     }
   }
   
-  
-
-  
-  
-  
-  
-
-  
-  
-
 }
 
 module.exports = OrderController;

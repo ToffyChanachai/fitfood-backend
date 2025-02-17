@@ -24,6 +24,10 @@ Route.post('/register', 'AuthController.register')
 Route.post('/login', 'AuthController.login')
 Route.post('/logout', 'AuthController.logout').middleware(['auth']);
 Route.get('/profile', 'AuthController.profile').middleware(['auth']);
+Route.put('/users/:id/role', 'AuthController.updateRole').middleware(['auth']) // ป้องกันไม่ให้ใครก็ได้เปลี่ยน role
+
+
+
 Route.put('users/update-password', 'AuthController.changePassword').middleware(['auth']);
 // Route.post('/forgot-password', 'AuthController.forgotPassword')
 // Route.post('/reset-password', 'AuthController.resetPassword')
@@ -58,12 +62,11 @@ Route.get("/sync-google-sheet", "CustomerController.syncData");
 // Route.get("customers-hhb", "CustomerController.getCustomersHHB");
 
 Route.group(() => {
-  Route.get("", "CustomerController.index");
-  // Route.post("", "CustomersController.store");
-  Route.get("/:id", "CustomerController.show");
-  Route.put("/:id", "CustomerController.update");
-  Route.delete("/:id", "CustomerController.destroy");
-}).prefix("/customers");
+  Route.get("", "CustomerController.index").middleware('isAdmin')
+  Route.get("/:id", "CustomerController.show").middleware('isAdmin')
+  Route.put("/:id", "CustomerController.update").middleware('isAdmin')
+  Route.delete("/:id", "CustomerController.destroy").middleware('isAdmin')
+}).prefix("/customers")
 
 // Route.get("/sync-google-sheet-test", "TestController.syncData");
 Route.get("tests", "TestController.getTests");
@@ -210,9 +213,9 @@ Route.group(() => {
 
 Route.group(() => {
   Route.get("/", "SetupMenuPhController.index");
-  Route.post("/", "SetupMenuPhController.store");
-  Route.put("/:id", "SetupMenuPhController.update");
-  Route.delete("/:id", "SetupMenuPhController.destroy");
+  Route.post("/", "SetupMenuPhController.store").middleware('isAdmin');
+  Route.put("/:id", "SetupMenuPhController.update").middleware('isAdmin');
+  Route.delete("/:id", "SetupMenuPhController.destroy").middleware('isAdmin');
 
   Route.get(
     "get-menu-date/:date",
@@ -221,7 +224,7 @@ Route.group(() => {
   Route.get("/menus-by-day/:date", "SetupMenuPhController.getMenusByDay");
   Route.get("/menus-today", "SetupMenuPhController.getMenusByToDay");
 
-  Route.post("set-start-date", "SetupMenuPhController.setStartDate");
+  Route.post("set-start-date", "SetupMenuPhController.setStartDate").middleware('isAdmin');
   Route.get("get-start-date", async ({ response }) => {
     const controller = new (use(
       "App/Controllers/Http/SetupMenuPhController"
@@ -253,6 +256,121 @@ Route.group(() => {
     return response.json({ startDate });
   });
 }).prefix("setup-menu-hhb");
+
+Route.group(() => {
+  Route.get("/", "SetupMenuLcController.index");
+  Route.post("/", "SetupMenuLcController.store");
+  Route.put("/:id", "SetupMenuLcController.update");
+  Route.delete("/:id", "SetupMenuLcController.destroy");
+
+  Route.get(
+    "get-menu-date/:date",
+    "SetupMenuLcController.getDayOfWeekFromDate"
+  );
+  Route.get("/menus-by-day/:date", "SetupMenuLcController.getMenusByDay");
+  Route.get("/menus-today", "SetupMenuLcController.getMenusByToDay");
+
+  Route.post("set-start-date", "SetupMenuLcController.setStartDate");
+  Route.get("get-start-date", async ({ response }) => {
+    const controller = new (use(
+      "App/Controllers/Http/SetupMenuLcController"
+    ))();
+    const startDate = await controller.getStartDate();
+    return response.json({ startDate });
+  });
+}).prefix("setup-menu-lc");
+
+Route.group(() => {
+  Route.get("/", "SetupMenuFlController.index");
+  Route.post("/", "SetupMenuFlController.store");
+  Route.put("/:id", "SetupMenuFlController.update");
+  Route.delete("/:id", "SetupMenuFlController.destroy");
+
+  Route.get(
+    "get-menu-date/:date",
+    "SetupMenuFlController.getDayOfWeekFromDate"
+  );
+  Route.get("/menus-by-day/:date", "SetupMenuFlController.getMenusByDay");
+  Route.get("/menus-today", "SetupMenuFlController.getMenusByToDay");
+
+  Route.post("set-start-date", "SetupMenuFlController.setStartDate");
+  Route.get("get-start-date", async ({ response }) => {
+    const controller = new (use(
+      "App/Controllers/Http/SetupMenuFlController"
+    ))();
+    const startDate = await controller.getStartDate();
+    return response.json({ startDate });
+  });
+}).prefix("setup-menu-fl");
+
+Route.group(() => {
+  Route.get("/", "SetupMenuBpdController.index");
+  Route.post("/", "SetupMenuBpdController.store");
+  Route.put("/:id", "SetupMenuBpdController.update");
+  Route.delete("/:id", "SetupMenuBpdController.destroy");
+
+  Route.get(
+    "get-menu-date/:date",
+    "SetupMenuBpdController.getDayOfWeekFromDate"
+  );
+  Route.get("/menus-by-day/:date", "SetupMenuBpdController.getMenusByDay");
+  Route.get("/menus-today", "SetupMenuBpdController.getMenusByToDay");
+
+  Route.post("set-start-date", "SetupMenuBpdController.setStartDate");
+  Route.get("get-start-date", async ({ response }) => {
+    const controller = new (use(
+      "App/Controllers/Http/SetupMenuBpdController"
+    ))();
+    const startDate = await controller.getStartDate();
+    return response.json({ startDate });
+  });
+}).prefix("setup-menu-bpd");
+
+Route.group(() => {
+  Route.get("/", "SetupMenuDiseaseController.index");
+  Route.post("/", "SetupMenuDiseaseController.store");
+  Route.put("/:id", "SetupMenuDiseaseController.update");
+  Route.delete("/:id", "SetupMenuDiseaseController.destroy");
+
+  Route.get(
+    "get-menu-date/:date",
+    "SetupMenuDiseaseController.getDayOfWeekFromDate"
+  );
+  Route.get("/menus-by-day/:date", "SetupMenuDiseaseController.getMenusByDay");
+  Route.get("/menus-today", "SetupMenuDiseaseController.getMenusByToDay");
+
+  Route.post("set-start-date", "SetupMenuDiseaseController.setStartDate");
+  Route.get("get-start-date", async ({ response }) => {
+    const controller = new (use(
+      "App/Controllers/Http/SetupMenuDiseaseController"
+    ))();
+    const startDate = await controller.getStartDate();
+    return response.json({ startDate });
+  });
+}).prefix("setup-menu-fat-disease");
+
+Route.group(() => {
+  Route.get("/", "SetupMenuDiabeteController.index");
+  Route.post("/", "SetupMenuDiabeteController.store");
+  Route.put("/:id", "SetupMenuDiabeteController.update");
+  Route.delete("/:id", "SetupMenuDiabeteController.destroy");
+
+  Route.get(
+    "get-menu-date/:date",
+    "SetupMenuDiabeteController.getDayOfWeekFromDate"
+  );
+  Route.get("/menus-by-day/:date", "SetupMenuDiabeteController.getMenusByDay");
+  Route.get("/menus-today", "SetupMenuDiabeteController.getMenusByToDay");
+
+  Route.post("set-start-date", "SetupMenuDiabeteController.setStartDate");
+  Route.get("get-start-date", async ({ response }) => {
+    const controller = new (use(
+      "App/Controllers/Http/SetupMenuDiabeteController"
+    ))();
+    const startDate = await controller.getStartDate();
+    return response.json({ startDate });
+  });
+}).prefix("setup-menu-diabete");
 
 Route.group(() => {
   Route.get("", "OrderController.index");

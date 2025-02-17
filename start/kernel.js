@@ -1,8 +1,8 @@
-'use strict'
+"use strict";
 
 /** @type {import('@adonisjs/framework/src/Server')} */
-const Server = use('Server')
-const Role = use('App/Middleware/Role')
+const Server = use("Server");
+const Role = use("App/Middleware/Role");
 
 /*
 |--------------------------------------------------------------------------
@@ -14,13 +14,13 @@ const Role = use('App/Middleware/Role')
 |
 */
 const globalMiddleware = [
-  'Adonis/Middleware/BodyParser',
-  'Adonis/Middleware/Session',
+  "Adonis/Middleware/BodyParser",
+  "Adonis/Middleware/Session",
   // 'Adonis/Middleware/Shield',
-  'Adonis/Middleware/AuthInit',
-  'App/Middleware/ConvertEmptyStringsToNull',
-  'Adonis/Middleware/Cors',
-]
+  "Adonis/Middleware/AuthInit",
+  "App/Middleware/ConvertEmptyStringsToNull",
+  "Adonis/Middleware/Cors",
+];
 
 /*
 |--------------------------------------------------------------------------
@@ -40,10 +40,11 @@ const globalMiddleware = [
 |
 */
 const namedMiddleware = {
-  auth: 'Adonis/Middleware/Auth',
-  guest: 'Adonis/Middleware/AllowGuestOnly',
+  auth: "Adonis/Middleware/Auth",
+  guest: "Adonis/Middleware/AllowGuestOnly",
+  isAdmin: "App/Middleware/IsAdmin",
   // role: Role,
-}
+};
 
 /*
 |--------------------------------------------------------------------------
@@ -55,12 +56,8 @@ const namedMiddleware = {
 | control over request lifecycle.
 |
 */
-const serverMiddleware = [
-  'Adonis/Middleware/Static',
-  'Adonis/Middleware/Cors'
-]
+const serverMiddleware = ["Adonis/Middleware/Static", "Adonis/Middleware/Cors"];
 
-Server
-  .registerGlobal(globalMiddleware)
+Server.registerGlobal(globalMiddleware)
   .registerNamed(namedMiddleware)
-  .use(serverMiddleware)
+  .use(serverMiddleware);
