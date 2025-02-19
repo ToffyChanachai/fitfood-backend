@@ -38,7 +38,7 @@ class SaleRecordAffController {
       "select_food_id",
       "delivery_round_id",
       "note",
-      "free_mad", // จำนวนที่แถม
+      "free_mad", 
       "free_dessert",
       "free_brittles",
       "free_energy_balls",

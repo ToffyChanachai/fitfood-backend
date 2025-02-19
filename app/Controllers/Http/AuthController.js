@@ -76,6 +76,9 @@ class AuthController {
       return response.json({
         id: user.id,
         username: user.username,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        email: user.email,
         role: user.role, // ส่ง role ไปพร้อมข้อมูลผู้ใช้
       });
     } catch (error) {

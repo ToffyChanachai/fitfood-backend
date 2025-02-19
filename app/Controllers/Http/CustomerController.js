@@ -60,25 +60,18 @@ class CustomerController {
         "email",
         "customer_id",
         "name",
-        "customer_gender",
-        "customer_tel",
-        "customer_line_id",
+        "gender",
+        "tel",
+        "line_id",
         "food_allergies",
+        "food_allergies_detail",
         "delivery_date",
-        "address_mon_to_fri",
-        "recipient_mon_to_fri",
-        "address_sat_to_sun",
-        "recipient_sat_to_sun",
-        "other_detail",
         "note",
         "seller_name", // ต้องแปลงเป็น seller_name_id
         "sellect_by", // ตรวจสอบและแปลงให้เป็นค่า enum
         "address_1",
-        "zone_1", // ต้องแปลงเป็น zone_id
         "address_2",
-        "zone_2", // ต้องแปลงเป็น zone_id
         "address_3", // ต้องแปลงเป็น zone_id
-        "zone_3", // ต้องแปลงเป็น zone_id
       ]);
 
       // แปลงค่าที่จำเป็น
@@ -90,54 +83,54 @@ class CustomerController {
         }
       }
 
-      if (data.sellect_by) {
-        // เช็คค่าของ sellect_by เพื่อให้เป็นค่า enum ที่ถูกต้อง
-        const validSelectBy = ["customer", "aff"];
-        if (!validSelectBy.includes(data.sellect_by)) {
-          return response
-            .status(400)
-            .json({ message: "Invalid select_by value" });
-        }
-      }
+      // if (data.sellect_by) {
+      //   // เช็คค่าของ sellect_by เพื่อให้เป็นค่า enum ที่ถูกต้อง
+      //   const validSelectBy = ["customer", "aff"];
+      //   if (!validSelectBy.includes(data.sellect_by)) {
+      //     return response
+      //       .status(400)
+      //       .json({ message: "Invalid select_by value" });
+      //   }
+      // }
 
-      // แปลง seller_name เป็น seller_name_id
-      if (data.seller_name) {
-        const seller = await SellerName.findBy("name", data.seller_name);
-        if (seller) {
-          data.seller_name_id = seller.id;
-          delete data.seller_name; // ลบ seller_name ออกหลังจากแปลงเป็น seller_name_id
-        } else {
-          return response.status(400).json({ message: "Invalid seller_name" });
-        }
-      }
+      // // แปลง seller_name เป็น seller_name_id
+      // if (data.seller_name) {
+      //   const seller = await SellerName.findBy("name", data.seller_name);
+      //   if (seller) {
+      //     data.seller_name_id = seller.id;
+      //     delete data.seller_name; // ลบ seller_name ออกหลังจากแปลงเป็น seller_name_id
+      //   } else {
+      //     return response.status(400).json({ message: "Invalid seller_name" });
+      //   }
+      // }
 
-      // แปลง zone_1, zone_2, zone_3 เป็น zone_id
-      if (data.zone_1) {
-        const zone1 = await ZoneDelivery.findBy("name", data.zone_1);
-        if (zone1) {
-          data.zone_1 = zone1.id;
-        } else {
-          return response.status(400).json({ message: "Invalid zone_1" });
-        }
-      }
+      // // แปลง zone_1, zone_2, zone_3 เป็น zone_id
+      // if (data.zone_1) {
+      //   const zone1 = await ZoneDelivery.findBy("name", data.zone_1);
+      //   if (zone1) {
+      //     data.zone_1 = zone1.id;
+      //   } else {
+      //     return response.status(400).json({ message: "Invalid zone_1" });
+      //   }
+      // }
 
-      if (data.zone_2) {
-        const zone2 = await ZoneDelivery.findBy("name", data.zone_2);
-        if (zone2) {
-          data.zone_2 = zone2.id;
-        } else {
-          return response.status(400).json({ message: "Invalid zone_2" });
-        }
-      }
+      // if (data.zone_2) {
+      //   const zone2 = await ZoneDelivery.findBy("name", data.zone_2);
+      //   if (zone2) {
+      //     data.zone_2 = zone2.id;
+      //   } else {
+      //     return response.status(400).json({ message: "Invalid zone_2" });
+      //   }
+      // }
 
-      if (data.zone_3) {
-        const zone3 = await ZoneDelivery.findBy("name", data.zone_3);
-        if (zone3) {
-          data.zone_3 = zone3.id;
-        } else {
-          return response.status(400).json({ message: "Invalid zone_3" });
-        }
-      }
+      // if (data.zone_3) {
+      //   const zone3 = await ZoneDelivery.findBy("name", data.zone_3);
+      //   if (zone3) {
+      //     data.zone_3 = zone3.id;
+      //   } else {
+      //     return response.status(400).json({ message: "Invalid zone_3" });
+      //   }
+      // }
 
       // นำข้อมูลที่แปลงแล้วไป merge กับข้อมูลเดิม
       customer.merge(data);

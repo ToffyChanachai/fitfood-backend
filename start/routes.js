@@ -20,41 +20,41 @@ const Route = use("Route");
 // Route.post('/login', 'UserController.login')
 // Route.put('/make-admin/:id', 'UserController.makeAdmin')
 
-Route.post('/register', 'AuthController.register')
-Route.post('/login', 'AuthController.login')
-Route.post('/logout', 'AuthController.logout').middleware(['auth']);
-Route.get('/profile', 'AuthController.profile').middleware(['auth']);
-Route.put('/users/:id/role', 'AuthController.updateRole').middleware(['auth']) // ป้องกันไม่ให้ใครก็ได้เปลี่ยน role
+Route.post("/register", "AuthController.register");
+Route.post("/login", "AuthController.login");
+Route.post("/logout", "AuthController.logout").middleware(["auth"]);
+Route.get("/profile", "AuthController.profile").middleware(["auth"]);
+Route.put("/users/:id/role", "AuthController.updateRole").middleware(["auth"]); // ป้องกันไม่ให้ใครก็ได้เปลี่ยน role
 
-
-
-Route.put('users/update-password', 'AuthController.changePassword').middleware(['auth']);
+Route.put("users/update-password", "AuthController.changePassword").middleware([
+  "auth",
+]);
 // Route.post('/forgot-password', 'AuthController.forgotPassword')
 // Route.post('/reset-password', 'AuthController.resetPassword')
 
 Route.group(() => {
-  Route.post('customer', 'TestCustomerController.store')
+  Route.post("customer", "TestCustomerController.store");
   // Route.put('customer', 'TestCustomerController.store')
-  Route.get("/customer/profile", "TestCustomerController.show")
-}).middleware(['auth'])
+  Route.get("/customer/profile", "TestCustomerController.show");
+}).middleware(["auth"]);
 
+Route.get(
+  "check-user-registration",
+  "TestCustomerController.checkUserRegistration"
+).middleware(["auth"]);
 
+// Route.get('/test-hash', async ({ response }) => {
+//   const Hash = use('Hash')
+//   const password = 'password123'
 
-Route.get('check-user-registration', 'TestCustomerController.checkUserRegistration').middleware(['auth']);
+//   const hashedPassword = await Hash.make(password)
+//   console.log('Hashed password:', hashedPassword)
 
-
-  // Route.get('/test-hash', async ({ response }) => {
-  //   const Hash = use('Hash')
-  //   const password = 'password123'
-
-  //   const hashedPassword = await Hash.make(password)
-  //   console.log('Hashed password:', hashedPassword)
-
-  //   return response.send({
-  //     message: 'Password hashed successfully',
-  //     hashedPassword
-  //   })
-  // })
+//   return response.send({
+//     message: 'Password hashed successfully',
+//     hashedPassword
+//   })
+// })
 
 Route.get("/sync-google-sheet", "CustomerController.syncData");
 // Route.get("customers", "CustomerController.getCustomers");
@@ -62,26 +62,65 @@ Route.get("/sync-google-sheet", "CustomerController.syncData");
 // Route.get("customers-hhb", "CustomerController.getCustomersHHB");
 
 Route.group(() => {
-  Route.get("", "CustomerController.index").middleware('isAdmin')
-  Route.get("/:id", "CustomerController.show").middleware('isAdmin')
-  Route.put("/:id", "CustomerController.update").middleware('isAdmin')
-  Route.delete("/:id", "CustomerController.destroy").middleware('isAdmin')
-}).prefix("/customers")
+  Route.get("", "CustomerController.index");
+  Route.get("/:id", "CustomerController.show").middleware("isAdmin");
+  Route.put("/:id", "CustomerController.update").middleware("isAdmin");
+  Route.delete("/:id", "CustomerController.destroy").middleware("isAdmin");
+}).prefix("/customers");
+
+Route.group(() => {
+  Route.get("", "CustomerHhbController.index");
+  Route.get("/:id", "CustomerHhbController.show").middleware("isAdmin");
+  Route.put("/:id", "CustomerHhbController.update").middleware("isAdmin");
+  Route.delete("/:id", "CustomerHhbController.destroy").middleware("isAdmin");
+}).prefix("/customers-hhb");
 
 // Route.get("/sync-google-sheet-test", "TestController.syncData");
 Route.get("tests", "TestController.getTests");
 
-Route.post("/sale-records", "SaleRecordAffController.store");
-Route.get("/sale-records", "SaleRecordAffController.index");
-Route.put("/sale-records/:id", "SaleRecordAffController.update");
-Route.put(
-  "/sale-records/:id/payment-status",
-  "SaleRecordAffController.updatePaymentStatus"
-);
-Route.delete("/sale-records/:id", "SaleRecordAffController.deleteSaleRecord");
+// Route.post("/sale-records", "SaleRecordAffController.store");
+// Route.get("/sale-records", "SaleRecordAffController.index");
+// Route.put("/sale-records/:id", "SaleRecordAffController.update");
+// Route.put(
+//   "/sale-records/:id/payment-status",
+//   "SaleRecordAffController.updatePaymentStatus"
+// );
+// Route.delete("/sale-records/:id", "SaleRecordAffController.deleteSaleRecord");
 
-Route.get("sales/daily", "SaleRecordAffController.getDailySales");
-Route.get("sales/all-daily", "SaleRecordAffController.getAllSales");
+// Route.get("sales/daily", "SaleRecordAffController.getDailySales");
+// Route.get("sales/all-daily", "SaleRecordAffController.getAllSales");
+
+Route.group(() => {
+  Route.post("/", "SaleRecordAffController.store");
+  Route.get("/", "SaleRecordAffController.index");
+  Route.put("/:id", "SaleRecordAffController.update");
+  Route.put(
+    "/:id/payment-status",
+    "SaleRecordAffController.updatePaymentStatus"
+  );
+  Route.delete("/:id", "SaleRecordAffController.deleteSaleRecord");
+}).prefix("/sale-records");
+
+Route.group(() => {
+  Route.get("/daily", "SaleRecordAffController.getDailySales");
+  Route.get("/all-daily", "SaleRecordAffController.getAllSales");
+}).prefix("/sales");
+
+Route.group(() => {
+  Route.post("/", "SaleRecordHhbController.store");
+  Route.get("/", "SaleRecordHhbController.index");
+  Route.put("/:id", "SaleRecordHhbController.update");
+  Route.put(
+    "/:id/payment-status",
+    "SaleRecordHhbController.updatePaymentStatus"
+  );
+  Route.delete("/:id", "SaleRecordHhbController.deleteSaleRecord");
+}).prefix("/sale-records-hhb");
+
+Route.group(() => {
+  Route.get("/daily", "SaleRecordHhbController.getDailySales");
+  Route.get("/all-daily", "SaleRecordHhbController.getAllSales");
+}).prefix("/sales-hhb");
 
 Route.get("/promotion-types", "PromotionTypeController.index");
 Route.post("/promotion-types", "PromotionTypeController.store");
@@ -213,9 +252,9 @@ Route.group(() => {
 
 Route.group(() => {
   Route.get("/", "SetupMenuPhController.index");
-  Route.post("/", "SetupMenuPhController.store").middleware('isAdmin');
-  Route.put("/:id", "SetupMenuPhController.update").middleware('isAdmin');
-  Route.delete("/:id", "SetupMenuPhController.destroy").middleware('isAdmin');
+  Route.post("/", "SetupMenuPhController.store").middleware("isAdmin");
+  Route.put("/:id", "SetupMenuPhController.update").middleware("isAdmin");
+  Route.delete("/:id", "SetupMenuPhController.destroy").middleware("isAdmin");
 
   Route.get(
     "get-menu-date/:date",
@@ -224,7 +263,9 @@ Route.group(() => {
   Route.get("/menus-by-day/:date", "SetupMenuPhController.getMenusByDay");
   Route.get("/menus-today", "SetupMenuPhController.getMenusByToDay");
 
-  Route.post("set-start-date", "SetupMenuPhController.setStartDate").middleware('isAdmin');
+  Route.post("set-start-date", "SetupMenuPhController.setStartDate").middleware(
+    "isAdmin"
+  );
   Route.get("get-start-date", async ({ response }) => {
     const controller = new (use(
       "App/Controllers/Http/SetupMenuPhController"
@@ -375,21 +416,21 @@ Route.group(() => {
 Route.group(() => {
   Route.get("", "OrderController.index");
   Route.post("", "OrderController.store");
-    // Route.get("/:id", "SelectFoodController.show");
+  // Route.get("/:id", "SelectFoodController.show");
   // Route.put("/:id", "SelectFoodController.update");
   // Route.delete("/:id", "SelectFoodController.destroy");
-}).prefix("/order").middleware(["auth"]);
+})
+  .prefix("/order")
+  .middleware(["auth"]);
 
 Route.group(() => {
-  Route.post('create-customer', 'CustomerController.create').middleware(['auth']) 
-}).prefix('/customer')
+  Route.post("create-customer", "CustomerController.create").middleware([
+    "auth",
+  ]);
+}).prefix("/customer");
 
-Route.get('/orders/date-range', 'OrderController.getOrdersByDateRange')
-Route.put(
-  "/order/:id/status",
-  "OrderController.updateStatus"
-);
+Route.get("/orders/date-range", "OrderController.getOrdersByDateRange");
+Route.put("/order/:id/status", "OrderController.updateStatus");
 Route.post("/order/update-status", "OrderController.updateMultipleStatus");
-
 
 Route.get("/seller-names-sync-data", "SellerNameController.syncData");
