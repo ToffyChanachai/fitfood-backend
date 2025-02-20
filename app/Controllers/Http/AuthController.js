@@ -6,6 +6,15 @@ const User = use("App/Models/User");
 // const crypto = require('crypto')
 
 class AuthController {
+  async index({ response }) {
+    try {
+      const users = await User.all();
+      return response.json(users);
+    } catch (error) {
+      return response.status(500).json({ message: "Error fetching users" });
+    }
+  }
+
   async register({ request, response }) {
     const { firstname, lastname, username, email, password, role } =
       request.only([
@@ -34,6 +43,26 @@ class AuthController {
       message: "User registered successfully",
       user,
     });
+  }
+
+  async destroy({ params, response, auth }) {
+    try {
+      // ค้นหาผู้ใช้จาก ID
+      const user = await User.find(params.id);
+      if (!user) {
+        return response.status(404).json({ message: "User not found" });
+      }
+
+      // ตรวจสอบว่าเป็น admin เท่านั้นที่สามารถลบ user ได้
+      if (auth.user.role !== "admin") {
+        return response.status(403).json({ message: "Unauthorized" });
+      }
+
+      await user.delete();
+      return response.json({ message: "User deleted successfully" });
+    } catch (error) {
+      return response.status(500).json({ message: "Error deleting user" });
+    }
   }
 
   async login({ request, auth, response }) {

@@ -24,11 +24,15 @@ Route.post("/register", "AuthController.register");
 Route.post("/login", "AuthController.login");
 Route.post("/logout", "AuthController.logout").middleware(["auth"]);
 Route.get("/profile", "AuthController.profile").middleware(["auth"]);
-Route.put("/users/:id/role", "AuthController.updateRole").middleware(["auth"]); // ป้องกันไม่ให้ใครก็ได้เปลี่ยน role
+Route.put("/users/:id/role", "AuthController.updateRole") // ป้องกันไม่ให้ใครก็ได้เปลี่ยน role
 
 Route.put("users/update-password", "AuthController.changePassword").middleware([
   "auth",
 ]);
+
+Route.get('/users', 'AuthController.index');
+Route.delete('/users/:id', 'UserController.destroy');
+Route.put("/users/:id/role", "AuthController.updateRole") 
 // Route.post('/forgot-password', 'AuthController.forgotPassword')
 // Route.post('/reset-password', 'AuthController.resetPassword')
 
