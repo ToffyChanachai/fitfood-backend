@@ -15,7 +15,6 @@ class SaleRecordAffController {
       "package_type_id",
       "seller_name_id",
       "package_price",
-      "delivery",
       "discount",
       "extra_charge",
       "extra_charge_price",
@@ -44,7 +43,9 @@ class SaleRecordAffController {
       "free_energy_balls",
       "free_dressing",
       "free_yoghurt",
-      "free_granola"
+      "free_granola",
+      "free_credit",
+      "other_promotion_detail",
     ]);
   
     try {
@@ -73,6 +74,7 @@ class SaleRecordAffController {
           saleData.dressing = (packageData.free_dressing || 0) + (saleData.free_dressing || 0);
           saleData.yoghurt = (packageData.free_yoghurt || 0) + (saleData.free_yoghurt || 0);
           saleData.granola = (packageData.free_granola || 0) + (saleData.free_granola || 0);
+          saleData.credit = (packageData.free_credit || 0) + (saleData.free_credit || 0);
   
           const price = parseFloat(packageData.price);
           const extraChargePercent = parseFloat(saleData.extra_charge || 0);
@@ -209,7 +211,6 @@ class SaleRecordAffController {
       "package_type_id",
       "seller_name_id",
       "package_price",
-      "delivery",
       "discount",
       "extra_charge",
       "extra_charge_price",
@@ -232,6 +233,16 @@ class SaleRecordAffController {
       "select_food_id",
       "delivery_round_id",
       "note",
+      "free_mad", 
+      "free_dessert",
+      "free_brittles",
+      "free_energy_balls",
+      "free_dressing",
+      "free_yoghurt",
+      "free_granola",
+      "free_credit",
+      "other_promotion_detail",
+
     ]);
   
     try {
@@ -261,6 +272,15 @@ class SaleRecordAffController {
           saleData.expiry_date = null;
           saleData.remaining_days = 0;
         } else {
+          saleData.mad = (packageData.free_mad || 0) + (saleData.free_mad || 0);
+          saleData.dessert = (packageData.free_dessert || 0) + (saleData.free_dessert || 0);
+          saleData.brittles = (packageData.free_brittles || 0) + (saleData.free_brittles || 0);
+          saleData.energy_balls = (packageData.free_energy_balls || 0) + (saleData.free_energy_balls || 0);
+          saleData.dressing = (packageData.free_dressing || 0) + (saleData.free_dressing || 0);
+          saleData.yoghurt = (packageData.free_yoghurt || 0) + (saleData.free_yoghurt || 0);
+          saleData.granola = (packageData.free_granola || 0) + (saleData.free_granola || 0);
+          saleData.credit = (packageData.free_credit || 0) + (saleData.free_credit || 0);
+
           const price = parseFloat(packageData.price);
           const extraChargePercent = parseFloat(saleData.extra_charge || 0);
           const discount = parseFloat(saleData.discount || 0);
@@ -289,6 +309,11 @@ class SaleRecordAffController {
         saleData.expiry_date = null;
         saleData.remaining_days = 0;
       }
+
+      saleData.total_boxes = (saleData.mad || 0) + (saleData.dessert || 0) + (saleData.brittles || 0) + 
+      (saleData.energy_balls || 0) + (saleData.dressing || 0) + 
+      (saleData.yoghurt || 0) + (saleData.granola || 0);
+
   
       // 🚚 คำนวณราคาการจัดส่ง (Zone)
       const calculateZonePrice = async (zoneId, zoneQuantity) => {

@@ -9,7 +9,7 @@ class SaleRecordHhb extends Model {
       }
     
       customer() {
-        return this.belongsTo("App/Models/CustomerHhB");
+        return this.belongsTo("App/Models/CustomerHhb");
       }
     
       promotionType() {
