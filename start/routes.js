@@ -434,6 +434,8 @@ Route.group(() => {
 }).prefix("/customer");
 
 Route.get("/orders/date-range", "OrderController.getOrdersByDateRange");
+Route.get('/orders/user/:customer_id', 'OrderController.getOrdersByUserId');
+
 Route.put("/order/:id/status", "OrderController.updateStatus");
 Route.post("/order/update-status", "OrderController.updateMultipleStatus");
 
