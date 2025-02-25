@@ -67,7 +67,7 @@ class SaleRecordAffController {
           saleData.remaining_days = 0;
         } else {
           // บวกจำนวนที่แถมจาก saleData กับ packageData
-          saleData.mad = (packageData.free_mad || 0) + (saleData.free_mad || 0);
+          saleData.mad = (packageData.total_boxes || 0) + (packageData.free_mad || 0) + (saleData.free_mad || 0);
           saleData.dessert = (packageData.free_dessert || 0) + (saleData.free_dessert || 0);
           saleData.brittles = (packageData.free_brittles || 0) + (saleData.free_brittles || 0);
           saleData.energy_balls = (packageData.free_energy_balls || 0) + (saleData.free_energy_balls || 0);
@@ -272,7 +272,7 @@ class SaleRecordAffController {
           saleData.expiry_date = null;
           saleData.remaining_days = 0;
         } else {
-          saleData.mad = (packageData.free_mad || 0) + (saleData.free_mad || 0);
+          saleData.mad = (packageData.total_boxes || 0) + (packageData.free_mad || 0) + (saleData.free_mad || 0);
           saleData.dessert = (packageData.free_dessert || 0) + (saleData.free_dessert || 0);
           saleData.brittles = (packageData.free_brittles || 0) + (saleData.free_brittles || 0);
           saleData.energy_balls = (packageData.free_energy_balls || 0) + (saleData.free_energy_balls || 0);

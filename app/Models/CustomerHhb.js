@@ -8,6 +8,10 @@ class CustomerHhb extends Model {
     return "customers_hhbs";
   }
 
+  salesRecords() {
+    return this.hasMany("App/Models/SaleRecordHhb", "customer_id", "customer_id"); // ใช้ customer_id ที่เป็น string
+  }
+
   user() {
     return this.belongsTo("App/Models/User");
   }

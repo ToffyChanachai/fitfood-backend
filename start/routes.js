@@ -24,27 +24,36 @@ Route.post("/register", "AuthController.register");
 Route.post("/login", "AuthController.login");
 Route.post("/logout", "AuthController.logout").middleware(["auth"]);
 Route.get("/profile", "AuthController.profile").middleware(["auth"]);
-Route.put("/users/:id/role", "AuthController.updateRole") // ป้องกันไม่ให้ใครก็ได้เปลี่ยน role
+Route.put("/users/:id/role", "AuthController.updateRole"); // ป้องกันไม่ให้ใครก็ได้เปลี่ยน role
 
 Route.put("users/update-password", "AuthController.changePassword").middleware([
   "auth",
 ]);
 
-Route.get('/users', 'AuthController.index');
-Route.delete('/users/:id', 'UserController.destroy');
-Route.put("/users/:id/role", "AuthController.updateRole") 
+Route.get("/users", "AuthController.index");
+Route.delete("/users/:id", "UserController.destroy");
+Route.put("/users/:id/role", "AuthController.updateRole");
 // Route.post('/forgot-password', 'AuthController.forgotPassword')
 // Route.post('/reset-password', 'AuthController.resetPassword')
 
 Route.group(() => {
   Route.post("customer", "TestCustomerController.store");
-  // Route.put('customer', 'TestCustomerController.store')
   Route.get("/customer/profile", "TestCustomerController.show");
+
+  Route.post("customer-hhb", "TestCustomerController.storeHHB");
+  Route.get("/customer-hhb/profile", "TestCustomerController.showHHB");
 }).middleware(["auth"]);
+
+// Route.post("customer-hhb", "TestCustomerController.storeHHB");
 
 Route.get(
   "check-user-registration",
   "TestCustomerController.checkUserRegistration"
+).middleware(["auth"]);
+
+Route.get(
+  "check-user-registration-hhb",
+  "TestCustomerController.checkUserRegistrationHHB"
 ).middleware(["auth"]);
 
 // Route.get('/test-hash', async ({ response }) => {
@@ -428,15 +437,37 @@ Route.group(() => {
   .middleware(["auth"]);
 
 Route.group(() => {
+  Route.get("", "OrderHhbController.index");
+  Route.post("", "OrderHhbController.store");
+  // Route.get("/:id", "SelectFoodController.show");
+  // Route.put("/:id", "SelectFoodController.update");
+  // Route.delete("/:id", "SelectFoodController.destroy");
+})
+  .prefix("/order-hhb")
+  // .middleware(["auth"]);
+
+Route.group(() => {
   Route.post("create-customer", "CustomerController.create").middleware([
     "auth",
   ]);
 }).prefix("/customer");
 
 Route.get("/orders/date-range", "OrderController.getOrdersByDateRange");
-Route.get('/orders/user/:customer_id', 'OrderController.getOrdersByUserId');
+Route.get("/orders/user/:customer_id", "OrderController.getOrdersByUserId");
 
 Route.put("/order/:id/status", "OrderController.updateStatus");
 Route.post("/order/update-status", "OrderController.updateMultipleStatus");
+
+Route.get("/orders-hhb/date-range", "OrderHhbController.getOrdersByDateRange");
+Route.get(
+  "/orders-hhb/user/:customer_id",
+  "OrderHhbController.getOrdersByUserId"
+);
+
+Route.put("/order-hhb/:id/status", "OrderHhbController.updateStatus");
+Route.post(
+  "/order-hhb/update-status",
+  "OrderHhbController.updateMultipleStatus"
+);
 
 Route.get("/seller-names-sync-data", "SellerNameController.syncData");

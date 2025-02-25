@@ -2,18 +2,16 @@
 const Menu = use("App/Models/Menu");
 const MealType = use("App/Models/MealType");
 const MenuType = use("App/Models/MenuType");
-const Order = use("App/Models/Order");
-const Customer = use("App/Models/Customer");
-const SaleRecordAff = use("App/Models/SaleRecordsAff");
+const Order = use("App/Models/OrderHhb");
+const Customer = use("App/Models/CustomerHhb");
+const SaleRecordHhb = use("App/Models/SaleRecordHhb");
 
-class OrderController {
+class OrderHhbController {
   async store({ request, response, auth }) {
     const { menu_id, quantity, order_date } = request.all();
 
-    // ดึงข้อมูล user ที่ล็อกอิน
     const user = await auth.getUser();
 
-    // ค้นหา customer_id จาก user_id
     const customer = await Customer.findBy("user_id", user.id);
     if (!customer) {
       return response
@@ -39,7 +37,6 @@ class OrderController {
 
     const menu_type_id = menu_type.id;
 
-    // สร้างคำสั่งซื้อใหม่ พร้อมใส่ customer_id
     const order = await Order.create({
       menu_id,
       quantity,
@@ -87,7 +84,7 @@ class OrderController {
       if (!customer) {
         return response.status(404).json({ message: "Customer not found" });
       }
-      let saleRecord = await SaleRecordAff.query()
+      let saleRecord = await SaleRecordHhb.query()
         .where("customer_id", customer.id)
         .orderBy("id", "asc") // จัดเรียงตาม ID เพื่อให้ได้บันทึกแรก
         .first();
@@ -95,8 +92,12 @@ class OrderController {
       if (!saleRecord) {
         return response.status(404).json({ message: "Sale record not found" });
       }
-      while (saleRecord.total_boxes === 0 || saleRecord.remaining_days <= 0 || saleRecord.payment_status === "unpaid") {
-        saleRecord = await SaleRecordAff.query()
+      while (
+        saleRecord.total_boxes === 0 ||
+        saleRecord.remaining_days <= 0 ||
+        saleRecord.payment_status === "unpaid"
+      ) {
+        saleRecord = await SaleRecordHhb.query()
           .where("customer_id", customer.id)
           .where("id", ">", saleRecord.id) // ค้นหาบันทึกถัดไปที่มี id มากกว่าบันทึกปัจจุบัน
           .orderBy("id", "asc")
@@ -107,7 +108,12 @@ class OrderController {
         }
       }
 
-      if (!saleRecord || saleRecord.total_boxes === 0 || saleRecord.remaining_days < 0 || saleRecord.payment_status === "unpaid") {
+      if (
+        !saleRecord ||
+        saleRecord.total_boxes === 0 ||
+        saleRecord.remaining_days < 0 ||
+        saleRecord.payment_status === "unpaid"
+      ) {
         return response
           .status(404)
           .json({ message: "ไม่พบบันทึกยอดขายที่มีจำนวน total_boxes" });
@@ -119,7 +125,7 @@ class OrderController {
       await saleRecord.save();
 
       if (status === "pending") {
-        const originalSaleRecord = await SaleRecordAff.find(
+        const originalSaleRecord = await SaleRecordHhb.find(
           order.sale_record_id
         );
         if (originalSaleRecord) {
@@ -167,7 +173,7 @@ class OrderController {
           return response.status(404).json({ message: "ไม่พบข้อมูลลูกค้า" });
         }
 
-        let saleRecord = await SaleRecordAff.query()
+        let saleRecord = await SaleRecordHhb.query()
           .where("customer_id", customer.id)
           .orderBy("id", "asc") // จัดเรียงตาม ID เพื่อให้ได้บันทึกแรก
           .first();
@@ -178,8 +184,12 @@ class OrderController {
             .json({ message: "ไม่พบข้อมูลบันทึกยอดขาย" });
         }
 
-        while (saleRecord.total_boxes === 0 || saleRecord.remaining_days <= 0 || saleRecord.payment_status === "unpaid") {
-          saleRecord = await SaleRecordAff.query()
+        while (
+          saleRecord.total_boxes === 0 ||
+          saleRecord.remaining_days <= 0 ||
+          saleRecord.payment_status === "unpaid"
+        ) {
+          saleRecord = await SaleRecordHhb.query()
             .where("customer_id", customer.id)
             .where("id", ">", saleRecord.id)
             .orderBy("id", "asc")
@@ -190,7 +200,12 @@ class OrderController {
           }
         }
 
-        if (!saleRecord || saleRecord.total_boxes === 0 || saleRecord.remaining_days <= 0 || saleRecord.payment_status === "unpaid") {
+        if (
+          !saleRecord ||
+          saleRecord.total_boxes === 0 ||
+          saleRecord.remaining_days <= 0 ||
+          saleRecord.payment_status === "unpaid"
+        ) {
           continue; // ข้ามไปยังออเดอร์ถัดไป
         }
 
@@ -204,7 +219,7 @@ class OrderController {
         // ถ้าสถานะเป็น "pending", ให้ตั้งค่า sale_record_id เป็น null
         if (status === "pending") {
           // คืนค่า total_boxes ของ sale_record_id นั้น
-          const originalSaleRecord = await SaleRecordAff.find(
+          const originalSaleRecord = await SaleRecordHhb.find(
             order.sale_record_id
           );
           if (originalSaleRecord) {
@@ -243,11 +258,11 @@ class OrderController {
       const query = Order.query().where("customer_id", customer_id);
 
       if (start_date) {
-        query.where('order_date', '>=', start_date); // กรองตั้งแต่วันที่เริ่มต้น
+        query.where("order_date", ">=", start_date); // กรองตั้งแต่วันที่เริ่มต้น
       }
 
       if (end_date) {
-        query.where('order_date', '<=', end_date); // กรองจนถึงวันที่สิ้นสุด
+        query.where("order_date", "<=", end_date); // กรองจนถึงวันที่สิ้นสุด
       }
 
       const orders = await query.fetch();
@@ -255,7 +270,9 @@ class OrderController {
       if (orders.rows.length === 0) {
         return response
           .status(404)
-          .json({ message: "ไม่พบคำสั่งซื้อสำหรับลูกค้ารายนี้ในช่วงวันที่ที่ระบุ" });
+          .json({
+            message: "ไม่พบคำสั่งซื้อสำหรับลูกค้ารายนี้ในช่วงวันที่ที่ระบุ",
+          });
       }
 
       return response.status(200).json({ orders });
@@ -265,8 +282,7 @@ class OrderController {
         error: error.message,
       });
     }
+  }
 }
 
-}
-
-module.exports = OrderController;
+module.exports = OrderHhbController;
