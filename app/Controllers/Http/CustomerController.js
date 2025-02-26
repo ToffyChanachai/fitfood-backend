@@ -65,6 +65,7 @@ class CustomerController {
         "line_id",
         "food_allergies",
         "food_allergies_detail",
+        "recipient_mon_to_fri",
         "delivery_date",
         "note",
         "seller_name", // ต้องแปลงเป็น seller_name_id

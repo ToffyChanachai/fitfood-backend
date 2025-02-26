@@ -86,6 +86,7 @@ Route.group(() => {
   Route.get("/:id", "CustomerHhbController.show").middleware("isAdmin");
   Route.put("/:id", "CustomerHhbController.update").middleware("isAdmin");
   Route.delete("/:id", "CustomerHhbController.destroy").middleware("isAdmin");
+  Route.put('/:id/delivery', 'CustomerHhbController.updateDelivery');
 }).prefix("/customers-hhb");
 
 // Route.get("/sync-google-sheet-test", "TestController.syncData");
@@ -127,6 +128,7 @@ Route.group(() => {
     "/:id/payment-status",
     "SaleRecordHhbController.updatePaymentStatus"
   );
+  Route.put('/:id/delivery', 'SaleRecordHhbController.updateDelivery');
   Route.delete("/:id", "SaleRecordHhbController.deleteSaleRecord");
 }).prefix("/sale-records-hhb");
 

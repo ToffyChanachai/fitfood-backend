@@ -96,6 +96,10 @@ class SaleRecordAffController {
   
           saleData.expiry_date = expiryDate.toISODate();
           saleData.remaining_days = Math.ceil(remainingDays);
+          saleData.total_boxes = (saleData.mad || 0) + (saleData.dessert || 0) + (saleData.brittles || 0) + 
+          (saleData.energy_balls || 0) + (saleData.dressing || 0) + 
+          (saleData.yoghurt || 0) + (saleData.granola || 0);
+    
         }
       } else {
         const addPrice = parseFloat(saleData.add_price || 0);
@@ -106,13 +110,23 @@ class SaleRecordAffController {
         saleData.extra_charge_price = extraChargePrice;
         saleData.total_package_price = addPrice + extraChargePrice - discount;
   
-        saleData.expiry_date = null;
-        saleData.remaining_days = 0;
+        const startDate = DateTime.now(); // ใช้วันนี้เป็นวันเริ่มต้น
+
+        // กำหนดวันที่หมดอายุ (Expiry Date) เป็น 30 วันจากวันนี้
+        const expiryDate = startDate.plus({ days: 30 });
+        const currentDate = DateTime.now(); // วันที่ปัจจุบัน
+
+        // คำนวณจำนวนวันที่เหลือ
+        const remainingDays = expiryDate
+          .diff(currentDate, "days")
+          .toObject().days;
+
+        // กำหนดค่า expiry_date และ remaining_days
+        saleData.expiry_date = expiryDate.toISODate(); // ให้เป็นรูปแบบวันที่
+        saleData.remaining_days = Math.ceil(remainingDays);
+        saleData.total_boxes = 1;
       }
 
-      saleData.total_boxes = (saleData.mad || 0) + (saleData.dessert || 0) + (saleData.brittles || 0) + 
-      (saleData.energy_balls || 0) + (saleData.dressing || 0) + 
-      (saleData.yoghurt || 0) + (saleData.granola || 0);
   
       // คำนวณราคาจากโซนต่าง ๆ (zone1, zone2, zone3, zoneOutsource)
       let totalZone1Price = 0;
@@ -296,6 +310,10 @@ class SaleRecordAffController {
   
           saleData.expiry_date = expiryDate.toISODate();
           saleData.remaining_days = Math.ceil(remainingDays);
+
+          saleData.total_boxes = (saleData.mad || 0) + (saleData.dessert || 0) + (saleData.brittles || 0) + 
+      (saleData.energy_balls || 0) + (saleData.dressing || 0) + 
+      (saleData.yoghurt || 0) + (saleData.granola || 0);
         }
       } else {
         const addPrice = parseFloat(saleData.add_price || 0);
@@ -306,13 +324,25 @@ class SaleRecordAffController {
         saleData.extra_charge_price = extraChargePrice;
         saleData.total_package_price = addPrice + extraChargePrice - discount;
   
-        saleData.expiry_date = null;
-        saleData.remaining_days = 0;
+        const startDate = DateTime.now(); // ใช้วันนี้เป็นวันเริ่มต้น
+
+        // กำหนดวันที่หมดอายุ (Expiry Date) เป็น 30 วันจากวันนี้
+        const expiryDate = startDate.plus({ days: 30 });
+        const currentDate = DateTime.now(); // วันที่ปัจจุบัน
+
+        // คำนวณจำนวนวันที่เหลือ
+        const remainingDays = expiryDate
+          .diff(currentDate, "days")
+          .toObject().days;
+
+        // กำหนดค่า expiry_date และ remaining_days
+        saleData.expiry_date = expiryDate.toISODate(); // ให้เป็นรูปแบบวันที่
+        saleData.remaining_days = Math.ceil(remainingDays);
+        saleData.total_boxes = 1;
+
       }
 
-      saleData.total_boxes = (saleData.mad || 0) + (saleData.dessert || 0) + (saleData.brittles || 0) + 
-      (saleData.energy_balls || 0) + (saleData.dressing || 0) + 
-      (saleData.yoghurt || 0) + (saleData.granola || 0);
+      
 
   
       // 🚚 คำนวณราคาการจัดส่ง (Zone)

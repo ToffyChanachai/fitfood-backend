@@ -15,6 +15,7 @@ class TestCustomerController {
       tel,
       line_id,
       food_allergies,
+      food_allergies_detail,
       delivery_date,
       address_mon_to_fri,
       recipient_mon_to_fri,
@@ -34,6 +35,7 @@ class TestCustomerController {
       "tel",
       "line_id",
       "food_allergies",
+      "food_allergies_detail",
       "delivery_date",
       "address_mon_to_fri",
       "recipient_mon_to_fri",
@@ -61,7 +63,10 @@ class TestCustomerController {
       tel: tel,
       line_id: line_id,
       food_allergies: food_allergies,
+      food_allergies_detail: food_allergies_detail,
       delivery_date: delivery_date,
+      recipient_mon_to_fri: recipient_mon_to_fri,
+      note: note,
       address_1: address_1,
       address_2: address_2,
       address_3: address_3,
@@ -175,103 +180,98 @@ class TestCustomerController {
     }
   }
 
-  async update({ request, response, auth, params }) {
-    // ดึงค่า customer_id จากพารามิเตอร์ของ URL
-    const customerId = params.id;
+  // async update({ request, response, auth, params }) {
+  //   const customerId = params.id;
+  //   const {
+  //     address,
+  //     gender,
+  //     tel,
+  //     line_id,
+  //     food_allergies,
+  //     food_allergies_detail,
+  //     delivery_date,
+  //     address_mon_to_fri,
+  //     recipient_mon_to_fri,
+  //     address_sat_to_sun,
+  //     recipient_sat_to_sun,
+  //     other_detail,
+  //     note,
+  //     address_1,
+  //     address_2,
+  //     address_3,
+  //     name,
+  //     email,
+  //   } = request.only([
+  //     "address",
+  //     "gender",
+  //     "tel",
+  //     "line_id",
+  //     "food_allergies",
+  //     "food_allergies_detail",
+  //     "delivery_date",
+  //     "address_mon_to_fri",
+  //     "recipient_mon_to_fri",
+  //     "address_sat_to_sun",
+  //     "recipient_sat_to_sun",
+  //     "other_detail",
+  //     "note",
+  //     "address_1",
+  //     "address_2",
+  //     "address_3",
+  //     "name",
+  //     "email",
+  //   ]);
 
-    // ดึงข้อมูลจากฟอร์ม
-    const {
-      address,
-      gender,
-      tel,
-      line_id,
-      food_allergies,
-      delivery_date,
-      address_mon_to_fri,
-      recipient_mon_to_fri,
-      address_sat_to_sun,
-      recipient_sat_to_sun,
-      other_detail,
-      note,
-      address_1,
-      address_2,
-      address_3,
-      name,
-      email,
-    } = request.only([
-      "address",
-      "gender",
-      "tel",
-      "line_id",
-      "food_allergies",
-      "delivery_date",
-      "address_mon_to_fri",
-      "recipient_mon_to_fri",
-      "address_sat_to_sun",
-      "recipient_sat_to_sun",
-      "other_detail",
-      "note",
-      "address_1",
-      "address_2",
-      "address_3",
-      "name",
-      "email",
-    ]);
+  //   try {
+  //     const user = await auth.getUser();
+  //     const customer = await Customer.find(customerId);
 
-    try {
-      // ตรวจสอบว่าผู้ใช้ล็อกอินอยู่
-      const user = await auth.getUser();
+  //     if (!customer) {
+  //       return response.status(404).json({
+  //         message: "Customer not found",
+  //       });
+  //     }
 
-      // ค้นหาข้อมูลลูกค้าในฐานข้อมูล
-      const customer = await Customer.find(customerId);
+  //     if (customer.user_id !== user.id) {
+  //       return response.status(403).json({
+  //         message: "Unauthorized to update this customer",
+  //       });
+  //     }
 
-      if (!customer) {
-        return response.status(404).json({
-          message: "Customer not found",
-        });
-      }
+  //     customer.merge({
+  //       email,
+  //       name,
+  //       address,
+  //       gender,
+  //       tel,
+  //       line_id,
+  //       food_allergies,
+  //       food_allergies_detail,
+  //       delivery_date,
+  //       address_mon_to_fri,
+  //       recipient_mon_to_fri,
+  //       address_sat_to_sun,
+  //       recipient_sat_to_sun,
+  //       other_detail,
+  //       note,
+  //       address_1,
+  //       address_2,
+  //       address_3,
+  //     });
 
-      // ตรวจสอบว่าผู้ใช้ที่ล็อกอินมีสิทธิ์แก้ไขข้อมูลนี้หรือไม่
-      if (customer.user_id !== user.id) {
-        return response.status(403).json({
-          message: "Unauthorized to update this customer",
-        });
-      }
+  //     await customer.save();
 
-      // อัปเดตข้อมูลลูกค้า
-      customer.merge({
-        email,
-        name,
-        address,
-        gender,
-        tel,
-        line_id,
-        food_allergies,
-        delivery_date,
-        address_mon_to_fri,
-        recipient_mon_to_fri,
-        address_sat_to_sun,
-        recipient_sat_to_sun,
-        other_detail,
-        note,
-        address_1,
-        address_2,
-        address_3,
-      });
-
-      await customer.save();
-
-      return response.status(200).json({
-        message: "Customer updated successfully",
-        customer,
-      });
-    } catch (error) {
-      return response.status(500).json({
-        message: "An error occurred while updating the customer",
-        error: error.message,
-      });
-    }
-  }
+  //     return response.status(200).json({
+  //       message: "Customer updated successfully",
+  //       customer,
+  //     });
+  //   } catch (error) {
+  //     return response.status(500).json({
+  //       message: "An error occurred while updating the customer",
+  //       error: error.message,
+  //     });
+  //   }
+  // }
 
   async show({ auth, response }) {
     try {
