@@ -115,6 +115,15 @@ class SaleRecordHhbController {
             (saleData.dressing || 0) +
             (saleData.yoghurt || 0) +
             (saleData.granola || 0);
+
+          saleData.total_boxes_show =
+            (saleData.mad || 0) +
+            (saleData.dessert || 0) +
+            (saleData.brittles || 0) +
+            (saleData.energy_balls || 0) +
+            (saleData.dressing || 0) +
+            (saleData.yoghurt || 0) +
+            (saleData.granola || 0);
         }
       } else {
         const addPrice = parseFloat(saleData.add_price || 0);
@@ -346,6 +355,15 @@ class SaleRecordHhbController {
           saleData.expiry_date = expiryDate.toISODate();
           saleData.remaining_days = Math.ceil(remainingDays);
           saleData.total_boxes =
+            (saleData.mad || 0) +
+            (saleData.dessert || 0) +
+            (saleData.brittles || 0) +
+            (saleData.energy_balls || 0) +
+            (saleData.dressing || 0) +
+            (saleData.yoghurt || 0) +
+            (saleData.granola || 0);
+
+          saleData.total_boxes_show =
             (saleData.mad || 0) +
             (saleData.dessert || 0) +
             (saleData.brittles || 0) +

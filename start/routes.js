@@ -79,6 +79,7 @@ Route.group(() => {
   Route.get("/:id", "CustomerController.show").middleware("isAdmin");
   Route.put("/:id", "CustomerController.update").middleware("isAdmin");
   Route.delete("/:id", "CustomerController.destroy").middleware("isAdmin");
+  
 }).prefix("/customers");
 
 Route.group(() => {
@@ -112,6 +113,7 @@ Route.group(() => {
     "/:id/payment-status",
     "SaleRecordAffController.updatePaymentStatus"
   );
+  Route.put('/:id/delivery', 'SaleRecordAffController.updateDelivery');
   Route.delete("/:id", "SaleRecordAffController.deleteSaleRecord");
 }).prefix("/sale-records");
 
@@ -446,7 +448,7 @@ Route.group(() => {
   // Route.delete("/:id", "SelectFoodController.destroy");
 })
   .prefix("/order-hhb")
-  // .middleware(["auth"]);
+  .middleware(["auth"]);
 
 Route.group(() => {
   Route.post("create-customer", "CustomerController.create").middleware([
