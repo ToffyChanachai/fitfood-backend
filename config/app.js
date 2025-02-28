@@ -42,7 +42,7 @@ module.exports = {
     |
     */
     allowMethodSpoofing: true,
-    port: Env.get('PORT', 3333),
+
     /*
     |--------------------------------------------------------------------------
     | Trust Proxy
