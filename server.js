@@ -1,4 +1,4 @@
-'use strict'
+"use strict";
 
 /*
 |--------------------------------------------------------------------------
@@ -17,9 +17,16 @@
 |     Make sure to pass relative path from the project root.
 */
 
-const { Ignitor } = require('@adonisjs/ignitor')
+const { Ignitor } = require("@adonisjs/ignitor");
 
-new Ignitor(require('@adonisjs/fold'))
+new Ignitor(require("@adonisjs/fold"))
   .appRoot(__dirname)
   .fireHttpServer()
-  .catch(console.error)
+  .catch(console.error);
+
+const port = process.env.PORT || 3333;
+
+// เริ่มต้นเซิร์ฟเวอร์ที่พอร์ตที่กำหนด
+server.listen(port, () => {
+  console.log(`Server started on port ${port}`);
+});
