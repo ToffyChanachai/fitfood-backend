@@ -1,32 +1,13 @@
-"use strict";
+'use strict'
 
-/*
-|--------------------------------------------------------------------------
-| Http server
-|--------------------------------------------------------------------------
-|
-| This file bootstrap Adonisjs to start the HTTP server. You are free to
-| customize the process of booting the http server.
-|
-| """ Loading ace commands """
-|     At times you may want to load ace commands when starting the HTTP server.
-|     Same can be done by chaining `loadCommands()` method after
-|
-| """ Preloading files """
-|     Also you can preload files by calling `preLoad('path/to/file')` method.
-|     Make sure to pass relative path from the project root.
-*/
+const { Ignitor } = require('@adonisjs/ignitor')
+const http = require('http')
+const server = http.createServer(new Ignitor(require('@adonisjs/fold')).app())
 
-const { Ignitor } = require("@adonisjs/ignitor");
-
-new Ignitor(require("@adonisjs/fold"))
-  .appRoot(__dirname)
-  .fireHttpServer()
-  .catch(console.error);
-
-const port = process.env.PORT || 3333;
+// รับค่าพอร์ตจากตัวแปรสภาพแวดล้อม หรือใช้พอร์ต 3333
+const port = process.env.PORT || 3333
 
 // เริ่มต้นเซิร์ฟเวอร์ที่พอร์ตที่กำหนด
 server.listen(port, () => {
-  console.log(`Server started on port ${port}`);
-});
+  console.log(`Server started on port ${port}`)
+})
