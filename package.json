@@ -6,7 +6,6 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "build": "node ace build --production",
     "test": "node ace test"
   },
   "keywords": [
