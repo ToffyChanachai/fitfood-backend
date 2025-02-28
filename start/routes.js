@@ -19,6 +19,7 @@ const Route = use("Route");
 // Route.post('/register', 'UserController.register')
 // Route.post('/login', 'UserController.login')
 // Route.put('/make-admin/:id', 'UserController.makeAdmin')
+Route.get('/', 'HomeController.index')
 
 Route.post("/register", "AuthController.register");
 Route.post("/login", "AuthController.login");
