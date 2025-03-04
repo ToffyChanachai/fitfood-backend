@@ -29,14 +29,12 @@ class MenuController {
         .json({ message: "ไม่พบข้อมูล Meal type ที่เกี่ยวข้อง" });
     }
 
-    // ตรวจสอบและจัดการกับรูปภาพที่อัปโหลด
     const image = request.file("image", {
       types: ["image"],
       size: "2mb",
     });
 
     if (image) {
-      // สร้างชื่อไฟล์ใหม่และบันทึกไฟล์
       const imageName = `${new Date().getTime()}_${image.clientName}`;
       await image.move(Helpers.publicPath("images"), {
         name: imageName,

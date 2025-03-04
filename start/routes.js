@@ -15,6 +15,11 @@
 
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
 const Route = use("Route");
+const Helpers = use("Helpers");
+
+Route.get("/images/:filename", async ({ params, response }) => {
+  return response.download(Helpers.publicPath(`images/${params.filename}`));
+});
 
 // Route.post('/register', 'UserController.register')
 // Route.post('/login', 'UserController.login')
