@@ -1,3 +1,5 @@
+const moment = require("moment");
+
 "use strict";
 const Menu = use("App/Models/Menu");
 const MealType = use("App/Models/MealType");
@@ -95,7 +97,11 @@ class OrderController {
       if (!saleRecord) {
         return response.status(404).json({ message: "Sale record not found" });
       }
-      while (saleRecord.total_boxes === 0 || saleRecord.remaining_days <= 0 || saleRecord.payment_status === "unpaid") {
+      while (
+        saleRecord.total_boxes === 0 ||
+        saleRecord.remaining_days <= 0 ||
+        saleRecord.payment_status === "unpaid"
+      ) {
         saleRecord = await SaleRecordAff.query()
           .where("customer_id", customer.id)
           .where("id", ">", saleRecord.id) // ค้นหาบันทึกถัดไปที่มี id มากกว่าบันทึกปัจจุบัน
@@ -107,7 +113,12 @@ class OrderController {
         }
       }
 
-      if (!saleRecord || saleRecord.total_boxes === 0 || saleRecord.remaining_days < 0 || saleRecord.payment_status === "unpaid") {
+      if (
+        !saleRecord ||
+        saleRecord.total_boxes === 0 ||
+        saleRecord.remaining_days < 0 ||
+        saleRecord.payment_status === "unpaid"
+      ) {
         return response
           .status(404)
           .json({ message: "ไม่พบบันทึกยอดขายที่มีจำนวน total_boxes" });
@@ -178,7 +189,11 @@ class OrderController {
             .json({ message: "ไม่พบข้อมูลบันทึกยอดขาย" });
         }
 
-        while (saleRecord.total_boxes === 0 || saleRecord.remaining_days <= 0 || saleRecord.payment_status === "unpaid") {
+        while (
+          saleRecord.total_boxes === 0 ||
+          saleRecord.remaining_days <= 0 ||
+          saleRecord.payment_status === "unpaid"
+        ) {
           saleRecord = await SaleRecordAff.query()
             .where("customer_id", customer.id)
             .where("id", ">", saleRecord.id)
@@ -190,7 +205,12 @@ class OrderController {
           }
         }
 
-        if (!saleRecord || saleRecord.total_boxes === 0 || saleRecord.remaining_days <= 0 || saleRecord.payment_status === "unpaid") {
+        if (
+          !saleRecord ||
+          saleRecord.total_boxes === 0 ||
+          saleRecord.remaining_days <= 0 ||
+          saleRecord.payment_status === "unpaid"
+        ) {
           continue; // ข้ามไปยังออเดอร์ถัดไป
         }
 
@@ -243,11 +263,11 @@ class OrderController {
       const query = Order.query().where("customer_id", customer_id);
 
       if (start_date) {
-        query.where('order_date', '>=', start_date); // กรองตั้งแต่วันที่เริ่มต้น
+        query.where("order_date", ">=", start_date); // กรองตั้งแต่วันที่เริ่มต้น
       }
 
       if (end_date) {
-        query.where('order_date', '<=', end_date); // กรองจนถึงวันที่สิ้นสุด
+        query.where("order_date", "<=", end_date); // กรองจนถึงวันที่สิ้นสุด
       }
 
       const orders = await query.fetch();
@@ -255,7 +275,43 @@ class OrderController {
       if (orders.rows.length === 0) {
         return response
           .status(404)
-          .json({ message: "ไม่พบคำสั่งซื้อสำหรับลูกค้ารายนี้ในช่วงวันที่ที่ระบุ" });
+          .json({
+            message: "ไม่พบคำสั่งซื้อสำหรับลูกค้ารายนี้ในช่วงวันที่ที่ระบุ",
+          });
+      }
+
+      return response.status(200).json({ orders });
+    } catch (error) {
+      return response.status(500).json({
+        message: "เกิดข้อผิดพลาดในการดึงประวัติการสั่งซื้อ",
+        error: error.message,
+      });
+    }
+  }
+  
+  async getOrdersByDate({ request, response }) {
+    const { start_date, end_date } = request.all(); // รับวันที่เริ่มต้นและสิ้นสุดจากพารามิเตอร์ URL
+
+    try {
+      // กรองคำสั่งซื้อโดยช่วงวันที่
+      const query = Order.query();
+
+      if (start_date) {
+        query.where("order_date", ">=", start_date); // กรองตั้งแต่วันที่เริ่มต้น
+      }
+
+      if (end_date) {
+        query.where("order_date", "<=", end_date); // กรองจนถึงวันที่สิ้นสุด
+      }
+
+      const orders = await query.fetch();
+
+      if (orders.rows.length === 0) {
+        return response
+          .status(404)
+          .json({
+            message: "ไม่พบคำสั่งซื้อในช่วงวันที่ที่ระบุ",
+          });
       }
 
       return response.status(200).json({ orders });
@@ -267,6 +323,47 @@ class OrderController {
     }
 }
 
+
+  async updateDelivery({ params, request, response }) {
+    const { delivery_round, deliver, delivery_zone, delivery_time } =
+      request.only([
+        "delivery_round",
+        "deliver",
+        "delivery_zone",
+        "delivery_time",
+      ]);
+
+    try {
+      const order = await Order.find(params.id);
+      if (!order) {
+        return response.status(404).json({ message: "ไม่พบข้อมูลการขาย" });
+      }
+
+      // 🛠 อัปเดตข้อมูลการจัดส่ง
+      order.delivery_round = delivery_round || null;
+      order.deliver = deliver || null;
+      order.delivery_zone = delivery_zone || null;
+
+      // ✅ แปลงเป็น Date Object (ถ้าข้อมูลไม่ใช่ null)
+      order.delivery_time = delivery_time
+        ? moment(delivery_time, "HH:mm").format("HH:mm")
+        : null;
+
+      // 📝 บันทึกข้อมูลที่อัปเดต
+      await order.save();
+
+      return response.status(200).json({
+        message: "อัปเดตข้อมูลการจัดส่งสำเร็จ",
+        data: order,
+      });
+    } catch (error) {
+      console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูลการจัดส่ง:", error);
+      return response.status(500).json({
+        message: "เกิดข้อผิดพลาดในการอัปเดตข้อมูลการจัดส่ง",
+        error: error.message,
+      });
+    }
+  }
 }
 
 module.exports = OrderController;

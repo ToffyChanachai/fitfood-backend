@@ -17,15 +17,10 @@
 const Route = use("Route");
 const Helpers = use("Helpers");
 
-Route.get("/images/:filename", async ({ params, response }) => {
-  return response.download(Helpers.publicPath(`images/${params.filename}`));
-});
-
 // Route.post('/register', 'UserController.register')
 // Route.post('/login', 'UserController.login')
 // Route.put('/make-admin/:id', 'UserController.makeAdmin')
 Route.get('/', 'HomeController.index')
-
 Route.post("/register", "AuthController.register");
 Route.post("/login", "AuthController.login");
 Route.post("/logout", "AuthController.logout").middleware(["auth"]);
@@ -439,7 +434,7 @@ Route.group(() => {
 Route.group(() => {
   Route.get("", "OrderController.index");
   Route.post("", "OrderController.store");
-  // Route.get("/:id", "SelectFoodController.show");
+    // Route.get("/:id", "SelectFoodController.show");
   // Route.put("/:id", "SelectFoodController.update");
   // Route.delete("/:id", "SelectFoodController.destroy");
 })
@@ -464,6 +459,9 @@ Route.group(() => {
 
 Route.get("/orders/date-range", "OrderController.getOrdersByDateRange");
 Route.get("/orders/user/:customer_id", "OrderController.getOrdersByUserId");
+Route.put('/orders/:id/delivery', 'OrderController.updateDelivery');
+Route.get('/orders', 'OrderController.getOrdersByDate')
+
 
 Route.put("/order/:id/status", "OrderController.updateStatus");
 Route.post("/order/update-status", "OrderController.updateMultipleStatus");
