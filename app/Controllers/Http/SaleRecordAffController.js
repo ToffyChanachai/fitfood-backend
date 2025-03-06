@@ -495,58 +495,50 @@ class SaleRecordAffController {
       saleData.total_price =
         saleData.total_package_price + saleData.total_delivery_price;
 
-        let transactionNumber = null;
-
-        // คำนวณปีและเดือนปัจจุบัน
-        const currentYear = new Date().getFullYear().toString().slice(-2); // ดึงปีล่าสุด 2 หลัก (เช่น 25 จาก 2025)
-        const currentMonth = String(new Date().getMonth() + 1).padStart(2, "0"); // ดึงเดือนปัจจุบัน
-        
-        // กำหนดตัวอักษรตาม package_type_id
         let prefix = "";
-        switch (saleData.package_type_id) {
-          case 2:
-            prefix = "AA";
-            break;
-          case 3:
-          case 4:
-            prefix = "AB";
-            break;
-          case 5:
-          case 6:
-            prefix = "AC";
-            break;
-          default:
-            prefix = "AA"; // กำหนดค่าเริ่มต้นหากไม่มีการกำหนด
-            break;
-        }
-        
-        // ค้นหาหมายเลข transaction ล่าสุดจากตาราง SaleRecordAff ตาม prefix
-        const lastSaleRecord = await SaleRecordAff.query()
-          .where("transaction", "like", `${prefix}${currentYear}${currentMonth}%`) // ค้นหาตาม prefix, ปี และ เดือน
-          .orderBy("transaction", "desc")
-          .first();
-        
-        if (lastSaleRecord) {
-          const lastTransaction = lastSaleRecord.transaction;
-          const lastYear = lastTransaction.slice(2, 4); // ดึงปีจากหมายเลข transaction (เช่น 25 จาก AA25)
-          const lastMonth = lastTransaction.slice(4, 6); // ดึงเดือนจากหมายเลข transaction (เช่น 03 จาก AA2503)
-          const lastPrefix = lastTransaction.slice(0, 2); // ดึง prefix จากหมายเลข transaction (เช่น AA จาก AA25)
-        
-          // หาก prefix เปลี่ยนจาก AA -> AB หรือ AB -> AC หรือจากปีหรือเดือนเปลี่ยน ให้เพิ่มเลขขึ้น 1
-          if (lastPrefix !== prefix || lastYear !== currentYear || lastMonth !== currentMonth) {
-            // รีเซ็ตเลขใหม่
-            transactionNumber = `${prefix}${currentYear}${currentMonth}0001`;
-          } else {
-            // ถ้า prefix เดิม ใช้เลขเดิมจากหมายเลข transaction ล่าสุด
-            const lastTransactionNumber = lastTransaction.slice(7).padStart(4, '0'); // ดึงหมายเลข 4 หลักจากส่วนที่เหลือ
-            transactionNumber = `${prefix}${currentYear}${currentMonth}${lastTransactionNumber}`;
-          }
-        } else {
-          // ถ้าไม่มีการบันทึกเลย ให้เริ่มจาก 0001
+      switch (saleData.package_type_id) {
+        case 2:
+          prefix = "AA";
+          break;
+        case 3:
+        case 4:
+          prefix = "AB";
+          break;
+        case 5:
+        case 6:
+          prefix = "AC";
+          break;
+        default:
+          prefix = "AA"; // กำหนดค่าเริ่มต้นหากไม่มีการกำหนด
+          break;
+      }
+
+      // ค้นหาหมายเลข transaction ล่าสุดจากตาราง SaleRecordAff ตาม prefix
+      const lastSaleRecord = await SaleRecordAff.query()
+        .where("transaction", "like", `${prefix}${currentYear}${currentMonth}%`) // ค้นหาตาม prefix, ปี และ เดือน
+        .orderBy("transaction", "desc")
+        .first();
+
+      if (lastSaleRecord) {
+        const lastTransaction = lastSaleRecord.transaction;
+        const lastYear = lastTransaction.slice(2, 4); // ดึงปีจากหมายเลข transaction (เช่น 25 จาก AA25)
+        const lastMonth = lastTransaction.slice(4, 6); // ดึงเดือนจากหมายเลข transaction (เช่น 03 จาก AA2503)
+
+        if (lastYear !== currentYear || lastMonth !== currentMonth) {
           transactionNumber = `${prefix}${currentYear}${currentMonth}0001`;
+        } else {
+          const lastTransactionNumber = lastTransaction.slice(7); // ดึงหมายเลข 4 หลักจากส่วนที่เหลือ
+          const newTransactionNumber = parseInt(lastTransactionNumber) + 1;
+          transactionNumber = `${prefix}${currentYear}${currentMonth}${String(
+            newTransactionNumber
+          ).padStart(4, "0")}`;
         }
-        
-        saleData.transaction = transactionNumber;
+      } else {
+        // ถ้าไม่มีการบันทึกเลย ให้เริ่มจาก 0001
+        transactionNumber = `${prefix}${currentYear}${currentMonth}0001`;
+      }
+
+      saleData.transaction = transactionNumber;
         
       // 📝 อัปเดตข้อมูล SaleRecord
       saleRecord.merge(saleData);
