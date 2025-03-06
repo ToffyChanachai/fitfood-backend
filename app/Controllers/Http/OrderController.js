@@ -49,7 +49,8 @@ class OrderController {
       user_id: user.id, // เก็บ user_id ด้วย
       customer_id: customer.id, // เพิ่ม customer_id จากที่หาได้
       menu_type_id,
-      status: "pending", // กำหนดสถานะเริ่มต้น
+      status: "pending", 
+      delivery_address: customer.address_1
     });
 
     return response.status(201).json({
@@ -324,46 +325,56 @@ class OrderController {
 }
 
 
-  async updateDelivery({ params, request, response }) {
-    const { delivery_round, deliver, delivery_zone, delivery_time } =
-      request.only([
-        "delivery_round",
-        "deliver",
-        "delivery_zone",
-        "delivery_time",
-      ]);
+async updateDelivery({ params, request, response }) {
+  const {
+    delivery_round,
+    deliver,
+    delivery_zone,
+    delivery_time,
+    delivery_address,  // รับค่าที่อยู่ที่อัปเดต
+  } = request.only([
+    "delivery_round",
+    "deliver",
+    "delivery_zone",
+    "delivery_time",
+    "delivery_address",  // เพิ่ม delivery_address ในที่นี้
+  ]);
 
-    try {
-      const order = await Order.find(params.id);
-      if (!order) {
-        return response.status(404).json({ message: "ไม่พบข้อมูลการขาย" });
-      }
-
-      // 🛠 อัปเดตข้อมูลการจัดส่ง
-      order.delivery_round = delivery_round || null;
-      order.deliver = deliver || null;
-      order.delivery_zone = delivery_zone || null;
-
-      // ✅ แปลงเป็น Date Object (ถ้าข้อมูลไม่ใช่ null)
-      order.delivery_time = delivery_time
-        ? moment(delivery_time, "HH:mm").format("HH:mm")
-        : null;
-
-      // 📝 บันทึกข้อมูลที่อัปเดต
-      await order.save();
-
-      return response.status(200).json({
-        message: "อัปเดตข้อมูลการจัดส่งสำเร็จ",
-        data: order,
-      });
-    } catch (error) {
-      console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูลการจัดส่ง:", error);
-      return response.status(500).json({
-        message: "เกิดข้อผิดพลาดในการอัปเดตข้อมูลการจัดส่ง",
-        error: error.message,
-      });
+  try {
+    const order = await Order.find(params.id);
+    if (!order) {
+      return response.status(404).json({ message: "ไม่พบข้อมูลการขาย" });
     }
+
+    // 🛠 อัปเดตข้อมูลการจัดส่ง
+    order.delivery_round = delivery_round || null;
+    order.deliver = deliver || null;
+    order.delivery_zone = delivery_zone || null;
+
+    // ✅ แปลงเป็น Date Object (ถ้าข้อมูลไม่ใช่ null)
+    order.delivery_time = delivery_time
+      ? moment(delivery_time, "HH:mm").format("HH:mm")
+      : null;
+
+    // 🏠 อัปเดตที่อยู่ที่เลือก
+    order.delivery_address = delivery_address || null;  // อัปเดตที่อยู่
+
+    // 📝 บันทึกข้อมูลที่อัปเดต
+    await order.save();
+
+    return response.status(200).json({
+      message: "อัปเดตข้อมูลการจัดส่งสำเร็จ",
+      data: order,
+    });
+  } catch (error) {
+    console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูลการจัดส่ง:", error);
+    return response.status(500).json({
+      message: "เกิดข้อผิดพลาดในการอัปเดตข้อมูลการจัดส่ง",
+      error: error.message,
+    });
   }
+}
+
 }
 
 module.exports = OrderController;
