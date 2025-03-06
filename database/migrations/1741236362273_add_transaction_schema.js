@@ -5,13 +5,13 @@ const Schema = use('Schema')
 
 class AddTransactionSchema extends Schema {
   up () {
-    this.table('sale_records_affs', (table) => {
-      table.string('transaction_ref')
+    this.table('sale_records_hhbs', (table) => {
+      table.string('transaction').notNullable().unique()
         })
   }
 
   down () {
-    this.table('sale_records_affs', (table) => {
+    this.table('sale_records_hhbs', (table) => {
       // reverse alternations
     })
   }

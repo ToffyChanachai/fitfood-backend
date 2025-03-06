@@ -211,6 +211,56 @@ class SaleRecordHhbController {
         saleData.total_package_price + saleData.total_delivery_price;
       saleData.total_price = totalPrice;
 
+      let transactionNumber = null;
+
+      // คำนวณปีและเดือนปัจจุบัน
+      const currentYear = new Date().getFullYear().toString().slice(-2); // ดึงปีล่าสุด 2 หลัก (เช่น 25 จาก 2025)
+      const currentMonth = String(new Date().getMonth() + 1).padStart(2, "0");
+
+      let prefix = "";
+      switch (saleData.package_type_id) {
+        case 2:
+          prefix = "HA";
+          break;
+        case 3:
+        case 4:
+          prefix = "HB";
+          break;
+        case 5:
+        case 6:
+          prefix = "HC";
+          break;
+        default:
+          prefix = "HA"; // กำหนดค่าเริ่มต้นหากไม่มีการกำหนด
+          break;
+      }
+
+      // ค้นหาหมายเลข transaction ล่าสุดจากตาราง SaleRecordHhb ตาม prefix
+      const lastSaleRecord = await SaleRecordHhb.query()
+        .where("transaction", "like", `${prefix}${currentYear}${currentMonth}%`) // ค้นหาตาม prefix, ปี และ เดือน
+        .orderBy("transaction", "desc")
+        .first();
+
+      if (lastSaleRecord) {
+        const lastTransaction = lastSaleRecord.transaction;
+        const lastYear = lastTransaction.slice(2, 4); // ดึงปีจากหมายเลข transaction (เช่น 25 จาก AA25)
+        const lastMonth = lastTransaction.slice(4, 6); // ดึงเดือนจากหมายเลข transaction (เช่น 03 จาก AA2503)
+
+        if (lastYear !== currentYear || lastMonth !== currentMonth) {
+          transactionNumber = `${prefix}${currentYear}${currentMonth}0001`;
+        } else {
+          const lastTransactionNumber = lastTransaction.slice(7); // ดึงหมายเลข 4 หลักจากส่วนที่เหลือ
+          const newTransactionNumber = parseInt(lastTransactionNumber) + 1;
+          transactionNumber = `${prefix}${currentYear}${currentMonth}${String(
+            newTransactionNumber
+          ).padStart(4, "0")}`;
+        }
+      } else {
+        // ถ้าไม่มีการบันทึกเลย ให้เริ่มจาก 0001
+        transactionNumber = `${prefix}${currentYear}${currentMonth}0001`;
+      }
+
+      saleData.transaction = transactionNumber;
       // บันทึกข้อมูลการขาย
       const saleRecord = await SaleRecordHhb.create(saleData);
 
@@ -437,6 +487,57 @@ class SaleRecordHhbController {
         saleData.total_zone_outsource_price;
       saleData.total_price =
         saleData.total_package_price + saleData.total_delivery_price;
+
+      let transactionNumber = null;
+
+      // คำนวณปีและเดือนปัจจุบัน
+      const currentYear = new Date().getFullYear().toString().slice(-2); // ดึงปีล่าสุด 2 หลัก (เช่น 25 จาก 2025)
+      const currentMonth = String(new Date().getMonth() + 1).padStart(2, "0");
+
+      let prefix = "";
+      switch (saleData.package_type_id) {
+        case 2:
+          prefix = "HA";
+          break;
+        case 3:
+        case 4:
+          prefix = "HB";
+          break;
+        case 5:
+        case 6:
+          prefix = "HC";
+          break;
+        default:
+          prefix = "HA"; // กำหนดค่าเริ่มต้นหากไม่มีการกำหนด
+          break;
+      }
+
+      // ค้นหาหมายเลข transaction ล่าสุดจากตาราง SaleRecordHhb ตาม prefix
+      const lastSaleRecord = await SaleRecordHhb.query()
+        .where("transaction", "like", `${prefix}${currentYear}${currentMonth}%`) // ค้นหาตาม prefix, ปี และ เดือน
+        .orderBy("transaction", "desc")
+        .first();
+
+      if (lastSaleRecord) {
+        const lastTransaction = lastSaleRecord.transaction;
+        const lastYear = lastTransaction.slice(2, 4); // ดึงปีจากหมายเลข transaction (เช่น 25 จาก AA25)
+        const lastMonth = lastTransaction.slice(4, 6); // ดึงเดือนจากหมายเลข transaction (เช่น 03 จาก AA2503)
+
+        if (lastYear !== currentYear || lastMonth !== currentMonth) {
+          transactionNumber = `${prefix}${currentYear}${currentMonth}0001`;
+        } else {
+          const lastTransactionNumber = lastTransaction.slice(7); // ดึงหมายเลข 4 หลักจากส่วนที่เหลือ
+          const newTransactionNumber = parseInt(lastTransactionNumber) + 1;
+          transactionNumber = `${prefix}${currentYear}${currentMonth}${String(
+            newTransactionNumber
+          ).padStart(4, "0")}`;
+        }
+      } else {
+        // ถ้าไม่มีการบันทึกเลย ให้เริ่มจาก 0001
+        transactionNumber = `${prefix}${currentYear}${currentMonth}0001`;
+      }
+
+      saleData.transaction = transactionNumber;
 
       // 📝 อัปเดตข้อมูล SaleRecord
       saleRecord.merge(saleData);
