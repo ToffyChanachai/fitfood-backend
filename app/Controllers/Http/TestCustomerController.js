@@ -48,6 +48,7 @@ class TestCustomerController {
       "address_3",
       "name", // เพิ่มการรับข้อมูล name
       "email", // เพิ่มการรับข้อมูล email
+      // "delivery_address",
     ]);
 
     // ดึงข้อมูลผู้ใช้ที่ล็อกอินอยู่
@@ -70,6 +71,7 @@ class TestCustomerController {
       address_1: address_1,
       address_2: address_2,
       address_3: address_3,
+      delivery_address: address_1,
     });
 
     return response.status(201).json({
@@ -130,6 +132,7 @@ class TestCustomerController {
       "address_3",
       "name", // เพิ่มการรับข้อมูล name
       "email", // เพิ่มการรับข้อมูล email
+      // "delivery_address",
     ]);
 
     const user = await auth.getUser();
@@ -146,6 +149,7 @@ class TestCustomerController {
       address_2: address_2,
       address_3: address_3,
       note: note,
+      delivery_address: address_1,
     });
 
     return response.status(201).json({

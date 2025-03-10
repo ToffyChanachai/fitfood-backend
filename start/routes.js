@@ -78,7 +78,7 @@ Route.get("/sync-google-sheet", "CustomerController.syncData");
 Route.group(() => {
   Route.get("", "CustomerController.index");
   Route.get("/:id", "CustomerController.show").middleware("isAdmin");
-  Route.put("/:id", "CustomerController.update").middleware("isAdmin");
+  Route.put("/:id", "CustomerController.update");
   Route.delete("/:id", "CustomerController.destroy").middleware("isAdmin");
   
 }).prefix("/customers");
@@ -457,9 +457,10 @@ Route.group(() => {
 
 Route.get("/orders/date-range", "OrderController.getOrdersByDateRange");
 Route.get("/orders/user/:customer_id", "OrderController.getOrdersByUserId");
-Route.put('/orders/:id/delivery', 'OrderController.updateDelivery');
 Route.get('/orders', 'OrderController.getOrdersByDate')
-
+Route.put('/orders/:id', 'OrderController.updateQuantity');
+Route.delete('/orders/:id', 'OrderController.destroy');
+Route.post("/orders-add", "OrderController.storeAdd");
 
 Route.put("/order/:id/status", "OrderController.updateStatus");
 Route.post("/order/update-status", "OrderController.updateMultipleStatus");
@@ -469,7 +470,10 @@ Route.get(
   "/orders-hhb/user/:customer_id",
   "OrderHhbController.getOrdersByUserId"
 );
-Route.put('/orders-hhb/:id/delivery', 'OrderHhbController.updateDelivery');
+Route.put('/orders-hhb/:id', 'OrderHhbController.updateQuantity');
+Route.delete('/orders-hhb/:id', 'OrderHhbController.destroy');
+Route.post("/orders-hhb-add", "OrderHhbController.storeAdd");
+
 
 
 Route.put("/order-hhb/:id/status", "OrderHhbController.updateStatus");

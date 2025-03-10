@@ -282,14 +282,22 @@ class SaleRecordAffController {
     }
   }
 
-  async index({ response }) {
+  async index({ request, response }) {
     try {
-      const saleRecords = await SaleRecordAff.query()
+      // รับค่าเดือนจาก query parameter เช่น ?month=2025-03
+      const month = request.input("month");
+
+      let query = SaleRecordAff.query()
         .with("customer")
         .with("promotionType")
         .with("program")
-        .with("package")
-        .fetch();
+        .with("package");
+
+      if (month) {
+        query = query.whereRaw("TO_CHAR(created_at, 'YYYY-MM') = ?", [month]);
+      }
+
+      const saleRecords = await query.fetch();
 
       return response.status(200).json(saleRecords);
     } catch (error) {
@@ -299,6 +307,7 @@ class SaleRecordAffController {
         .json({ message: "Error fetching sale records", error: error.message });
     }
   }
+
 
   async update({ params, request, response }) {
     const saleRecordId = params.id;
@@ -513,32 +522,32 @@ class SaleRecordAffController {
           break;
       }
 
-      // ค้นหาหมายเลข transaction ล่าสุดจากตาราง SaleRecordAff ตาม prefix
-      const lastSaleRecord = await SaleRecordAff.query()
-        .where("transaction", "like", `${prefix}${currentYear}${currentMonth}%`) // ค้นหาตาม prefix, ปี และ เดือน
-        .orderBy("transaction", "desc")
-        .first();
+      // // ค้นหาหมายเลข transaction ล่าสุดจากตาราง SaleRecordAff ตาม prefix
+      // const lastSaleRecord = await SaleRecordAff.query()
+      //   .where("transaction", "like", `${prefix}${currentYear}${currentMonth}%`) // ค้นหาตาม prefix, ปี และ เดือน
+      //   .orderBy("transaction", "desc")
+      //   .first();
 
-      if (lastSaleRecord) {
-        const lastTransaction = lastSaleRecord.transaction;
-        const lastYear = lastTransaction.slice(2, 4); // ดึงปีจากหมายเลข transaction (เช่น 25 จาก AA25)
-        const lastMonth = lastTransaction.slice(4, 6); // ดึงเดือนจากหมายเลข transaction (เช่น 03 จาก AA2503)
+      // if (lastSaleRecord) {
+      //   const lastTransaction = lastSaleRecord.transaction;
+      //   const lastYear = lastTransaction.slice(2, 4); // ดึงปีจากหมายเลข transaction (เช่น 25 จาก AA25)
+      //   const lastMonth = lastTransaction.slice(4, 6); // ดึงเดือนจากหมายเลข transaction (เช่น 03 จาก AA2503)
 
-        if (lastYear !== currentYear || lastMonth !== currentMonth) {
-          transactionNumber = `${prefix}${currentYear}${currentMonth}0001`;
-        } else {
-          const lastTransactionNumber = lastTransaction.slice(7); // ดึงหมายเลข 4 หลักจากส่วนที่เหลือ
-          const newTransactionNumber = parseInt(lastTransactionNumber) + 1;
-          transactionNumber = `${prefix}${currentYear}${currentMonth}${String(
-            newTransactionNumber
-          ).padStart(4, "0")}`;
-        }
-      } else {
-        // ถ้าไม่มีการบันทึกเลย ให้เริ่มจาก 0001
-        transactionNumber = `${prefix}${currentYear}${currentMonth}0001`;
-      }
+      //   if (lastYear !== currentYear || lastMonth !== currentMonth) {
+      //     transactionNumber = `${prefix}${currentYear}${currentMonth}0001`;
+      //   } else {
+      //     const lastTransactionNumber = lastTransaction.slice(7); // ดึงหมายเลข 4 หลักจากส่วนที่เหลือ
+      //     const newTransactionNumber = parseInt(lastTransactionNumber) + 1;
+      //     transactionNumber = `${prefix}${currentYear}${currentMonth}${String(
+      //       newTransactionNumber
+      //     ).padStart(4, "0")}`;
+      //   }
+      // } else {
+      //   // ถ้าไม่มีการบันทึกเลย ให้เริ่มจาก 0001
+      //   transactionNumber = `${prefix}${currentYear}${currentMonth}0001`;
+      // }
 
-      saleData.transaction = transactionNumber;
+      // saleData.transaction = transactionNumber;
         
       // 📝 อัปเดตข้อมูล SaleRecord
       saleRecord.merge(saleData);

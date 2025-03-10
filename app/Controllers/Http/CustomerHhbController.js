@@ -29,7 +29,12 @@ class CustomerHhbController {
         "note",
         "address_1",
         "address_2",
-        "address_3", // ต้องแปลงเป็น zone_id
+        "address_3",
+
+        "delivery_address",
+        "delivery_round",
+        "deliver",
+        "delivery_zone",
       ]);
 
       customer.merge(data);
@@ -40,40 +45,6 @@ class CustomerHhbController {
       return response
         .status(500)
         .json({ message: "Error updating customer", error });
-    }
-  }
-
-  async updateDelivery({ params, request, response }) {
-    const { delivery_round, deliver, delivery_zone } = request.only([
-      "delivery_round", 
-      "deliver", 
-      "delivery_zone"
-    ]);
-  
-    try {
-        const Customer = await Customer.find(params.id);
-      if (!Customer) {
-        return response.status(404).json({ message: "ไม่พบข้อมูลการขาย" });
-      }
-  
-      // 🛠 อัปเดตข้อมูลการจัดส่ง
-      Customer.delivery_round = delivery_round || null; // อัปเดตรอบการจัดส่ง
-      Customer.deliver = deliver || null; // อัปเดตการจัดส่ง
-      Customer.delivery_zone = delivery_zone || null; // อัปเดตพื้นที่จัดส่ง
-  
-      // 📝 บันทึกข้อมูลที่อัปเดต
-      await Customer.save();
-  
-      return response.status(200).json({
-        message: "อัปเดตข้อมูลการจัดส่งสำเร็จ",
-        data: Customer,
-      });
-    } catch (error) {
-      console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูลการจัดส่ง:", error);
-      return response.status(500).json({
-        message: "เกิดข้อผิดพลาดในการอัปเดตข้อมูลการจัดส่ง",
-        error: error.message,
-      });
     }
   }
 

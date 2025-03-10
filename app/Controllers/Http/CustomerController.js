@@ -1,4 +1,6 @@
 "use strict";
+const moment = require("moment");
+
 const Customer = use("App/Models/Customer");
 const Database = use("Database");
 const GoogleSheetService = require("../../Services/CustomersGoogleSheetService");
@@ -52,10 +54,8 @@ class CustomerController {
 
   async update({ params, request, response }) {
     try {
-      // ค้นหาลูกค้าโดย ID
       const customer = await Customer.findOrFail(params.id);
 
-      // ดึงข้อมูลจาก request
       const data = request.only([
         "email",
         "customer_id",
@@ -68,20 +68,29 @@ class CustomerController {
         "recipient_mon_to_fri",
         "delivery_date",
         "note",
-        "seller_name", // ต้องแปลงเป็น seller_name_id
-        "sellect_by", // ตรวจสอบและแปลงให้เป็นค่า enum
+        "seller_name",
+        "sellect_by",
         "address_1",
         "address_2",
-        "address_3", // ต้องแปลงเป็น zone_id
+        "address_3",
+
+        "delivery_address", // ✅ รวมการอัปเดตที่อยู่จัดส่ง
+        "delivery_round",
+        "deliver",
+        "delivery_zone",
+        "delivery_time",
       ]);
 
-      // แปลงค่าที่จำเป็น
       if (data.customer_gender) {
-        // เช็คค่าของ customer_gender เพื่อให้เป็นค่า enum ที่ถูกต้อง
         const validGenders = ["male", "female", "other"];
         if (!validGenders.includes(data.customer_gender)) {
           return response.status(400).json({ message: "Invalid gender value" });
         }
+      }
+      if (data.delivery_time) {
+        data.delivery_time = moment(data.delivery_time, "HH:mm").format(
+          "HH:mm"
+        );
       }
 
       // if (data.sellect_by) {
