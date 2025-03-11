@@ -115,6 +115,7 @@ Route.group(() => {
     "SaleRecordAffController.updatePaymentStatus"
   );
   Route.delete("/:id", "SaleRecordAffController.deleteSaleRecord");
+  Route.get("/user/:customer_id", "SaleRecordAffController.getSaleRecordsByUserId");
 }).prefix("/sale-records");
 
 Route.group(() => {
@@ -131,6 +132,7 @@ Route.group(() => {
     "SaleRecordHhbController.updatePaymentStatus"
   );
   Route.delete("/:id", "SaleRecordHhbController.deleteSaleRecord");
+  Route.get("/user/:customer_id", "SaleRecordHhbController.getSaleRecordsByUserId");
 }).prefix("/sale-records-hhb");
 
 Route.group(() => {

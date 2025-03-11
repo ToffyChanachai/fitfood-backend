@@ -21,7 +21,7 @@ class SaleRecordHhbController {
       "payment_status",
       "paid_date",
       "payment_type_id",
-      "start_date",
+      "start_package_date",
       "zone1_id",
       "zone1_quantity",
       "zone2_id",
@@ -57,7 +57,7 @@ class SaleRecordHhbController {
       saleData.promotion_type_id = saleData.promotion_type_id || null;
       saleData.program_id = saleData.program_id || null;
       saleData.package_id = saleData.package_id || null;
-      saleData.start_date = saleData.start_date || null;
+      saleData.start_package_date = saleData.start_package_date || null;
 
       if (saleData.package_id) {
         const packageData = await Package.find(saleData.package_id);
@@ -96,7 +96,7 @@ class SaleRecordHhbController {
           saleData.package_price = price;
           saleData.total_package_price = price + extraChargePrice - discount;
 
-          const startDate = DateTime.fromISO(saleData.start_date);
+          const startDate = DateTime.fromISO(saleData.start_package_date);
           const expiryDate = startDate.plus({
             days: packageData.package_validity,
           });
@@ -319,7 +319,7 @@ class SaleRecordHhbController {
       "payment_status",
       "paid_date",
       "payment_type_id",
-      "start_date",
+      "start_package_date",
       "zone1_id",
       "zone1_quantity",
       "zone2_id",
@@ -363,7 +363,7 @@ class SaleRecordHhbController {
       saleData.promotion_type_id = saleData.promotion_type_id || null;
       saleData.program_id = saleData.program_id || null;
       saleData.package_id = saleData.package_id || null;
-      saleData.start_date = saleData.start_date || null;
+      saleData.start_package_date = saleData.start_package_date || null;
 
       // 📦 คำนวณราคา Package
       if (saleData.package_id) {
@@ -401,7 +401,7 @@ class SaleRecordHhbController {
           saleData.package_price = price;
           saleData.total_package_price = price + extraChargePrice - discount;
 
-          const startDate = DateTime.fromISO(saleData.start_date);
+          const startDate = DateTime.fromISO(saleData.start_package_date);
           const expiryDate = startDate.plus({
             days: packageData.package_validity,
           });
@@ -923,6 +923,39 @@ class SaleRecordHhbController {
       console.error("Error retrieving all sales data:", error);
       return response.status(500).send({
         message: "ดึงข้อมูลยอดขายทั้งหมดไม่สำเร็จ",
+        error: error.message,
+      });
+    }
+  }
+
+  async getSaleRecordsByUserId({ params, request, response }) {
+    const { customer_id } = params; // รับ customer_id จากพารามิเตอร์ URL
+    const { start_date, end_date } = request.all(); // รับวันที่เริ่มต้นและสิ้นสุดจากพารามิเตอร์ URL
+
+    try {
+      // กรองคำสั่งซื้อโดย customer_id และช่วงวันที่
+      const query = SaleRecordHhb.query().where("customer_id", customer_id);
+
+      if (start_date) {
+        query.where("start_package_date", ">=", start_date); // กรองตั้งแต่วันที่เริ่มต้น
+      }
+
+      if (end_date) {
+        query.where("start_package_date", "<=", end_date); // กรองจนถึงวันที่สิ้นสุด
+      }
+
+      const saleRecords = await query.fetch();
+
+      if (saleRecords.rows.length === 0) {
+        return response.status(404).json({
+          message: "ไม่พบคำสั่งซื้อสำหรับลูกค้ารายนี้ในช่วงวันที่ที่ระบุ",
+        });
+      }
+
+      return response.status(200).json({ saleRecords });
+    } catch (error) {
+      return response.status(500).json({
+        message: "เกิดข้อผิดพลาดในการดึงประวัติการสั่งซื้อ",
         error: error.message,
       });
     }
