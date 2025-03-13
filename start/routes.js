@@ -73,7 +73,7 @@ Route.get("/sync-google-sheet", "CustomerController.syncData");
 // Route.get("customers-hhb", "CustomerController.getCustomersHHB");
 
 Route.group(() => {
-  Route.get("", "CustomerController.index");
+  Route.get("", "CustomerController.index").middleware("isAdmin");
   Route.get("/:id", "CustomerController.show").middleware("isAdmin");
   Route.put("/:id", "CustomerController.update").middleware("isAdmin");
   Route.delete("/:id", "CustomerController.destroy").middleware("isAdmin");
