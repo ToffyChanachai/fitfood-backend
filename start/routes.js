@@ -96,7 +96,7 @@ Route.group(() => {
     "SaleRecordAffController.updatePaymentStatus"
   );
   Route.delete("/:id", "SaleRecordAffController.deleteSaleRecord");
-  Route.get("/user/:customer_id", "SaleRecordAffController.getSaleRecordsByUserId");
+  Route.get("/user/:customer_id", "SaleRecordAffController.getSaleRecordsByCustomerId");
 }).prefix("/sale-records").middleware("isAdmin");
 
 Route.group(() => {
@@ -113,7 +113,7 @@ Route.group(() => {
     "SaleRecordHhbController.updatePaymentStatus"
   );
   Route.delete("/:id", "SaleRecordHhbController.deleteSaleRecord");
-  Route.get("/user/:customer_id", "SaleRecordHhbController.getSaleRecordsByUserId");
+  Route.get("/user/:customer_id", "SaleRecordHhbController.getSaleRecordsByCustomerId");
 }).prefix("/sale-records-hhb").middleware("isAdmin");
 
 Route.group(() => {
@@ -277,13 +277,13 @@ Route.group(() => {
     const startDate = await controller.getStartDate();
     return response.json({ startDate });
   });
-}).prefix("setup-menu-ph").middleware("isAdmin");
+}).prefix("setup-menu-ph");
 
 Route.group(() => {
   Route.get("/", "SetupMenuHhbController.index");
-  Route.post("/", "SetupMenuHhbController.store");
-  Route.put("/:id", "SetupMenuHhbController.update");
-  Route.delete("/:id", "SetupMenuHhbController.destroy");
+  Route.post("/", "SetupMenuHhbController.store").middleware("isAdmin");
+  Route.put("/:id", "SetupMenuHhbController.update").middleware("isAdmin");
+  Route.delete("/:id", "SetupMenuHhbController.destroy").middleware("isAdmin");
 
   Route.get(
     "get-menu-date/:date",
@@ -292,7 +292,7 @@ Route.group(() => {
   Route.get("/menus-by-day/:date", "SetupMenuHhbController.getMenusByDay");
   Route.get("/menus-today", "SetupMenuHhbController.getMenusByToDay");
 
-  Route.post("set-start-date", "SetupMenuHhbController.setStartDate");
+  Route.post("set-start-date", "SetupMenuHhbController.setStartDate").middleware("isAdmin");
   Route.get("get-start-date", async ({ response }) => {
     const controller = new (use(
       "App/Controllers/Http/SetupMenuHhbController"
@@ -300,13 +300,13 @@ Route.group(() => {
     const startDate = await controller.getStartDate();
     return response.json({ startDate });
   });
-}).prefix("setup-menu-hhb").middleware("isAdmin");
+}).prefix("setup-menu-hhb");
 
 Route.group(() => {
   Route.get("/", "SetupMenuLcController.index");
-  Route.post("/", "SetupMenuLcController.store");
-  Route.put("/:id", "SetupMenuLcController.update");
-  Route.delete("/:id", "SetupMenuLcController.destroy");
+  Route.post("/", "SetupMenuLcController.store").middleware("isAdmin");
+  Route.put("/:id", "SetupMenuLcController.update").middleware("isAdmin");
+  Route.delete("/:id", "SetupMenuLcController.destroy").middleware("isAdmin");
 
   Route.get(
     "get-menu-date/:date",
@@ -315,7 +315,7 @@ Route.group(() => {
   Route.get("/menus-by-day/:date", "SetupMenuLcController.getMenusByDay");
   Route.get("/menus-today", "SetupMenuLcController.getMenusByToDay");
 
-  Route.post("set-start-date", "SetupMenuLcController.setStartDate");
+  Route.post("set-start-date", "SetupMenuLcController.setStartDate").middleware("isAdmin");
   Route.get("get-start-date", async ({ response }) => {
     const controller = new (use(
       "App/Controllers/Http/SetupMenuLcController"
@@ -323,13 +323,13 @@ Route.group(() => {
     const startDate = await controller.getStartDate();
     return response.json({ startDate });
   });
-}).prefix("setup-menu-lc").middleware("isAdmin");
+}).prefix("setup-menu-lc");
 
 Route.group(() => {
   Route.get("/", "SetupMenuFlController.index");
-  Route.post("/", "SetupMenuFlController.store");
-  Route.put("/:id", "SetupMenuFlController.update");
-  Route.delete("/:id", "SetupMenuFlController.destroy");
+  Route.post("/", "SetupMenuFlController.store").middleware("isAdmin");
+  Route.put("/:id", "SetupMenuFlController.update").middleware("isAdmin");
+  Route.delete("/:id", "SetupMenuFlController.destroy").middleware("isAdmin");
 
   Route.get(
     "get-menu-date/:date",
@@ -338,7 +338,7 @@ Route.group(() => {
   Route.get("/menus-by-day/:date", "SetupMenuFlController.getMenusByDay");
   Route.get("/menus-today", "SetupMenuFlController.getMenusByToDay");
 
-  Route.post("set-start-date", "SetupMenuFlController.setStartDate");
+  Route.post("set-start-date", "SetupMenuFlController.setStartDate").middleware("isAdmin");
   Route.get("get-start-date", async ({ response }) => {
     const controller = new (use(
       "App/Controllers/Http/SetupMenuFlController"
@@ -346,13 +346,13 @@ Route.group(() => {
     const startDate = await controller.getStartDate();
     return response.json({ startDate });
   });
-}).prefix("setup-menu-fl").middleware("isAdmin");
+}).prefix("setup-menu-fl");
 
 Route.group(() => {
   Route.get("/", "SetupMenuBpdController.index");
-  Route.post("/", "SetupMenuBpdController.store");
-  Route.put("/:id", "SetupMenuBpdController.update");
-  Route.delete("/:id", "SetupMenuBpdController.destroy");
+  Route.post("/", "SetupMenuBpdController.store").middleware("isAdmin");
+  Route.put("/:id", "SetupMenuBpdController.update").middleware("isAdmin");
+  Route.delete("/:id", "SetupMenuBpdController.destroy").middleware("isAdmin");
 
   Route.get(
     "get-menu-date/:date",
@@ -361,7 +361,7 @@ Route.group(() => {
   Route.get("/menus-by-day/:date", "SetupMenuBpdController.getMenusByDay");
   Route.get("/menus-today", "SetupMenuBpdController.getMenusByToDay");
 
-  Route.post("set-start-date", "SetupMenuBpdController.setStartDate");
+  Route.post("set-start-date", "SetupMenuBpdController.setStartDate").middleware("isAdmin");
   Route.get("get-start-date", async ({ response }) => {
     const controller = new (use(
       "App/Controllers/Http/SetupMenuBpdController"
@@ -369,13 +369,13 @@ Route.group(() => {
     const startDate = await controller.getStartDate();
     return response.json({ startDate });
   });
-}).prefix("setup-menu-bpd").middleware("isAdmin");
+}).prefix("setup-menu-bpd");
 
 Route.group(() => {
   Route.get("/", "SetupMenuDiseaseController.index");
-  Route.post("/", "SetupMenuDiseaseController.store");
-  Route.put("/:id", "SetupMenuDiseaseController.update");
-  Route.delete("/:id", "SetupMenuDiseaseController.destroy");
+  Route.post("/", "SetupMenuDiseaseController.store").middleware("isAdmin");
+  Route.put("/:id", "SetupMenuDiseaseController.update").middleware("isAdmin");
+  Route.delete("/:id", "SetupMenuDiseaseController.destroy").middleware("isAdmin");
 
   Route.get(
     "get-menu-date/:date",
@@ -384,7 +384,7 @@ Route.group(() => {
   Route.get("/menus-by-day/:date", "SetupMenuDiseaseController.getMenusByDay");
   Route.get("/menus-today", "SetupMenuDiseaseController.getMenusByToDay");
 
-  Route.post("set-start-date", "SetupMenuDiseaseController.setStartDate");
+  Route.post("set-start-date", "SetupMenuDiseaseController.setStartDate").middleware("isAdmin");
   Route.get("get-start-date", async ({ response }) => {
     const controller = new (use(
       "App/Controllers/Http/SetupMenuDiseaseController"
@@ -392,13 +392,13 @@ Route.group(() => {
     const startDate = await controller.getStartDate();
     return response.json({ startDate });
   });
-}).prefix("setup-menu-fat-disease").middleware("isAdmin");
+}).prefix("setup-menu-fat-disease");
 
 Route.group(() => {
   Route.get("/", "SetupMenuDiabeteController.index");
-  Route.post("/", "SetupMenuDiabeteController.store");
-  Route.put("/:id", "SetupMenuDiabeteController.update");
-  Route.delete("/:id", "SetupMenuDiabeteController.destroy");
+  Route.post("/", "SetupMenuDiabeteController.store").middleware("isAdmin");
+  Route.put("/:id", "SetupMenuDiabeteController.update").middleware("isAdmin");
+  Route.delete("/:id", "SetupMenuDiabeteController.destroy").middleware("isAdmin");
 
   Route.get(
     "get-menu-date/:date",
@@ -407,7 +407,7 @@ Route.group(() => {
   Route.get("/menus-by-day/:date", "SetupMenuDiabeteController.getMenusByDay");
   Route.get("/menus-today", "SetupMenuDiabeteController.getMenusByToDay");
 
-  Route.post("set-start-date", "SetupMenuDiabeteController.setStartDate");
+  Route.post("set-start-date", "SetupMenuDiabeteController.setStartDate").middleware("isAdmin");
   Route.get("get-start-date", async ({ response }) => {
     const controller = new (use(
       "App/Controllers/Http/SetupMenuDiabeteController"
@@ -415,7 +415,7 @@ Route.group(() => {
     const startDate = await controller.getStartDate();
     return response.json({ startDate });
   });
-}).prefix("setup-menu-diabete").middleware("isAdmin");
+}).prefix("setup-menu-diabete");
 
 Route.group(() => {
   Route.get("", "OrderController.index");
@@ -444,7 +444,7 @@ Route.group(() => {
 }).prefix("/customer");
 
 Route.get("/orders/date-range", "OrderController.getOrdersByDateRange").middleware("isAdmin");
-Route.get("/orders/user/:customer_id", "OrderController.getOrdersByUserId").middleware("isAdmin");
+Route.get("/orders/user/:customer_id", "OrderController.getOrdersByCustomerId").middleware("isAdmin");
 Route.get('/orders', 'OrderController.getOrdersByDate').middleware("isAdmin");
 Route.put('/orders/:id', 'OrderController.updateQuantity').middleware("isAdmin");
 Route.delete('/orders/:id', 'OrderController.destroy').middleware("isAdmin");
@@ -454,18 +454,27 @@ Route.put("/order/:id/status", "OrderController.updateStatus").middleware("isAdm
 Route.post("/order/update-status", "OrderController.updateMultipleStatus").middleware("isAdmin");
 
 Route.get("/orders-hhb/date-range", "OrderHhbController.getOrdersByDateRange").middleware("isAdmin");
-Route.get(
-  "/orders-hhb/user/:customer_id",
-  "OrderHhbController.getOrdersByUserId"
-).middleware("isAdmin");
+Route.get("/orders-hhb/user/:customer_id", "OrderHhbController.getOrdersByCustomerId").middleware("isAdmin");
 Route.put('/orders-hhb/:id', 'OrderHhbController.updateQuantity').middleware("isAdmin");
 Route.delete('/orders-hhb/:id', 'OrderHhbController.destroy').middleware("isAdmin");
 Route.post("/orders-hhb-add", "OrderHhbController.storeAdd").middleware("isAdmin");
 
 Route.put("/order-hhb/:id/status", "OrderHhbController.updateStatus").middleware("isAdmin");
-Route.post(
-  "/order-hhb/update-status",
-  "OrderHhbController.updateMultipleStatus"
-).middleware("isAdmin");
+Route.post("/order-hhb/update-status", "OrderHhbController.updateMultipleStatus").middleware("isAdmin");
 
 Route.get("/seller-names-sync-data", "SellerNameController.syncData").middleware("isAdmin");
+
+Route.group(() => {
+  Route.get("/orders", "OrderController.getOrdersByUserId").middleware(["auth"]);
+})
+
+Route.group(() => {
+  Route.get("/orders-hhb", "OrderHhbController.getOrdersByUserId").middleware(["auth"]);
+})
+
+Route.group(() => {
+  Route.get("/sale-records-user", "SaleRecordAffController.getSaleRecordsByUserId").middleware(["auth"]);
+})
+Route.group(() => {
+  Route.get("/sale-records-hhb-user", "SaleRecordHhbController.getSaleRecordsByUserId").middleware(["auth"]);
+})

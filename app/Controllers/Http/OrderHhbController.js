@@ -344,7 +344,7 @@ class OrderHhbController {
     }
   }
 
-  async getOrdersByUserId({ params, request, response }) {
+  async getOrdersByCustomerId({ params, request, response }) {
     const { customer_id } = params; // รับ customer_id จากพารามิเตอร์ URL
     const { start_date, end_date } = request.all(); // รับวันที่เริ่มต้นและสิ้นสุดจากพารามิเตอร์ URL
 
@@ -378,6 +378,57 @@ class OrderHhbController {
       });
     }
   }
+
+  async getOrdersByUserId({ auth, request, response }) {
+    const user = auth.user; // ดึงข้อมูลผู้ใช้ที่ล็อกอินอยู่
+    if (!user) {
+        return response.status(401).json({
+            message: "กรุณาเข้าสู่ระบบ",
+        });
+    }
+
+    const { start_date, end_date } = request.all(); // รับช่วงวันที่จาก query params
+
+    try {
+        // ดึง customer_id ของ user ที่ล็อกอินอยู่จากคำสั่งซื้อแรกที่พบ
+        const firstOrder = await Order.query().where("user_id", user.id).first();
+        
+        if (!firstOrder) {
+            return response.status(404).json({
+                message: "ไม่พบคำสั่งซื้อสำหรับบัญชีของคุณ",
+            });
+        }
+
+        const customerId = firstOrder.customer_id; // ดึง customer_id จากออเดอร์แรกที่เจอ
+
+        // ค้นหาคำสั่งซื้อทั้งหมดที่มี customer_id เดียวกัน
+        const query = Order.query().where("customer_id", customerId);
+
+        if (start_date) {
+            query.where("order_date", ">=", start_date);
+        }
+
+        if (end_date) {
+            query.where("order_date", "<=", end_date);
+        }
+
+        const orders = await query.fetch();
+
+        if (orders.rows.length === 0) {
+            return response.status(404).json({
+                message: "ไม่พบคำสั่งซื้อสำหรับลูกค้ารายนี้ในช่วงวันที่ที่ระบุ",
+            });
+        }
+
+        return response.status(200).json({ orders });
+    } catch (error) {
+        return response.status(500).json({
+            message: "เกิดข้อผิดพลาดในการดึงประวัติการสั่งซื้อ",
+            error: error.message,
+        });
+    }
+}
+
 
 }
 

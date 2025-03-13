@@ -309,7 +309,6 @@ class SaleRecordAffController {
     }
   }
 
-
   async update({ params, request, response }) {
     const saleRecordId = params.id;
     const saleData = request.only([
@@ -505,7 +504,7 @@ class SaleRecordAffController {
       saleData.total_price =
         saleData.total_package_price + saleData.total_delivery_price;
 
-        let prefix = "";
+      let prefix = "";
       switch (saleData.package_type_id) {
         case 2:
           prefix = "AA";
@@ -549,7 +548,7 @@ class SaleRecordAffController {
       // }
 
       // saleData.transaction = transactionNumber;
-        
+
       // 📝 อัปเดตข้อมูล SaleRecord
       saleRecord.merge(saleData);
 
@@ -897,7 +896,7 @@ class SaleRecordAffController {
     }
   }
 
-  async getSaleRecordsByUserId({ params, request, response }) {
+  async getSaleRecordsByCustomerId({ params, request, response }) {
     const { customer_id } = params; // รับ customer_id จากพารามิเตอร์ URL
     const { start_date, end_date } = request.all(); // รับวันที่เริ่มต้นและสิ้นสุดจากพารามิเตอร์ URL
 
@@ -918,6 +917,57 @@ class SaleRecordAffController {
       if (saleRecords.rows.length === 0) {
         return response.status(404).json({
           message: "ไม่พบคำสั่งซื้อสำหรับลูกค้ารายนี้ในช่วงวันที่ที่ระบุ",
+        });
+      }
+
+      return response.status(200).json({ saleRecords });
+    } catch (error) {
+      return response.status(500).json({
+        message: "เกิดข้อผิดพลาดในการดึงประวัติการสั่งซื้อ",
+        error: error.message,
+      });
+    }
+  }
+
+  async getSaleRecordsByUserId({ auth, request, response }) {
+    const user = auth.user; // ดึงข้อมูลผู้ใช้ที่ล็อกอินอยู่
+    if (!user) {
+      return response.status(401).json({
+        message: "กรุณาเข้าสู่ระบบ",
+      });
+    }
+
+    const { start_date, end_date } = request.all(); // รับช่วงวันที่จาก query params
+
+    try {
+      // ค้นหาข้อมูลลูกค้าโดยใช้ user_id ที่ล็อกอินอยู่
+      const customer = await Customer.query().where("user_id", user.id).first();
+
+      if (!customer) {
+        return response.status(404).json({
+          message: "ไม่พบข้อมูลลูกค้าสำหรับบัญชีของคุณ",
+        });
+      }
+
+      const customerId = customer.id; // ใช้ customer.id แทน customer_id
+
+      // ค้นหาประวัติการสั่งซื้อทั้งหมดที่มี customer_id เดียวกัน
+      const query = SaleRecordAff.query().where("customer_id", customerId);
+
+      if (start_date) {
+        query.where("start_package_date", ">=", start_date); // กรองตั้งแต่วันที่เริ่มต้น
+      }
+
+      if (end_date) {
+        query.where("start_package_date", "<=", end_date); // กรองจนถึงวันที่สิ้นสุด
+      }
+
+      const saleRecords = await query.fetch();
+
+      if (saleRecords.rows.length === 0) {
+        return response.status(404).json({
+          message:
+            "ไม่พบประวัติการสั่งซื้อสำหรับลูกค้ารายนี้ในช่วงวันที่ที่ระบุ",
         });
       }
 
