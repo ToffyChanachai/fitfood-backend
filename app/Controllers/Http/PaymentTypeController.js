@@ -3,65 +3,51 @@
 const PaymentType = use('App/Models/PaymentType')
 
 class PaymentTypeController {
-  // Create a new payment type
-  async store({ request, response }) {
-    const { name } = request.only(['name'])
-    const paymentType = await PaymentType.create({ name })
-    return response.status(201).json({
-      message: 'Payment type created successfully',
-      data: paymentType,
-    })
+  // อ่านข้อมูลทั้งหมด
+  async index ({ response }) {
+    const payment_types = await PaymentType.all()
+    return response.json(payment_types)
   }
 
-  // Get all payment types
-  async index({ response }) {
-    const paymentTypes = await PaymentType.all()
-    return response.status(200).json({
-      message: 'Payment types retrieved successfully',
-      data: paymentTypes,
-    })
-  }
-
-  // Get a single payment type by id
-  async show({ params, response }) {
+  // อ่านข้อมูลที่มี id เฉพาะ
+  async show ({ params, response }) {
     const paymentType = await PaymentType.find(params.id)
     if (!paymentType) {
-      return response.status(404).json({ message: 'Payment type not found' })
+      return response.status(404).json({ message: 'Not Found' })
     }
-    return response.status(200).json({
-      message: 'Payment type retrieved successfully',
-      data: paymentType,
-    })
+    return response.json(paymentType)
   }
 
-  // Update a payment type
-  async update({ params, request, response }) {
+  // สร้างข้อมูลใหม่
+  async store ({ request, response }) {
+    const data = request.only(['name'])
+    const paymentType = await PaymentType.create(data)
+    return response.status(201).json(paymentType)
+  }
+
+  // อัพเดตข้อมูลที่มี id
+  async update ({ params, request, response }) {
     const paymentType = await PaymentType.find(params.id)
     if (!paymentType) {
-      return response.status(404).json({ message: 'Payment type not found' })
+      return response.status(404).json({ message: 'Not Found' })
     }
 
-    const { name } = request.only(['name'])
-    paymentType.name = name
+    const data = request.only(['name'])
+    paymentType.merge(data)
     await paymentType.save()
 
-    return response.status(200).json({
-      message: 'Payment type updated successfully',
-      data: paymentType,
-    })
+    return response.json(paymentType)
   }
 
-  // Delete a payment type
-  async destroy({ params, response }) {
+  // ลบข้อมูลที่มี id
+  async destroy ({ params, response }) {
     const paymentType = await PaymentType.find(params.id)
     if (!paymentType) {
-      return response.status(404).json({ message: 'Payment type not found' })
+      return response.status(404).json({ message: 'Not Found' })
     }
-    await paymentType.delete()
 
-    return response.status(200).json({
-      message: 'Payment type deleted successfully',
-    })
+    await paymentType.delete()
+    return response.status(200).json({ message: 'Deleted Successfully' })
   }
 }
 
