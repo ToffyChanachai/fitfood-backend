@@ -17,15 +17,12 @@
 const Route = use("Route");
 const Helpers = use("Helpers");
 
-// Route.post('/register', 'UserController.register')
-// Route.post('/login', 'UserController.login')
-// Route.put('/make-admin/:id', 'UserController.makeAdmin')
 Route.get('/', 'HomeController.index')
 Route.post("/register", "AuthController.register");
 Route.post("/login", "AuthController.login");
 Route.post("/logout", "AuthController.logout").middleware(["auth"]);
 Route.get("/profile", "AuthController.profile").middleware(["auth"]);
-Route.put("/users/:id/role", "AuthController.updateRole"); // ป้องกันไม่ให้ใครก็ได้เปลี่ยน role
+Route.put("/users/:id/role", "AuthController.updateRole").middleware("isAdmin");
 
 Route.put("users/update-password", "AuthController.changePassword").middleware([
   "auth",
@@ -78,7 +75,7 @@ Route.get("/sync-google-sheet", "CustomerController.syncData");
 Route.group(() => {
   Route.get("", "CustomerController.index");
   Route.get("/:id", "CustomerController.show").middleware("isAdmin");
-  Route.put("/:id", "CustomerController.update");
+  Route.put("/:id", "CustomerController.update").middleware("isAdmin");
   Route.delete("/:id", "CustomerController.destroy").middleware("isAdmin");
   
 }).prefix("/customers");
@@ -91,37 +88,22 @@ Route.group(() => {
   Route.put('/:id/delivery', 'CustomerHhbController.updateDelivery');
 }).prefix("/customers-hhb");
 
-// Route.get("/sync-google-sheet-test", "TestController.syncData");
-Route.get("tests", "TestController.getTests");
-
-// Route.post("/sale-records", "SaleRecordAffController.store");
-// Route.get("/sale-records", "SaleRecordAffController.index");
-// Route.put("/sale-records/:id", "SaleRecordAffController.update");
-// Route.put(
-//   "/sale-records/:id/payment-status",
-//   "SaleRecordAffController.updatePaymentStatus"
-// );
-// Route.delete("/sale-records/:id", "SaleRecordAffController.deleteSaleRecord");
-
-// Route.get("sales/daily", "SaleRecordAffController.getDailySales");
-// Route.get("sales/all-daily", "SaleRecordAffController.getAllSales");
-
 Route.group(() => {
-  Route.post("/", "SaleRecordAffController.store");
+  Route.post("/", "SaleRecordAffController.store").middleware("isAdmin");
   Route.get("/", "SaleRecordAffController.index");
-  Route.put("/:id", "SaleRecordAffController.update");
+  Route.put("/:id", "SaleRecordAffController.update").middleware("isAdmin");
   Route.put(
     "/:id/payment-status",
     "SaleRecordAffController.updatePaymentStatus"
-  );
-  Route.delete("/:id", "SaleRecordAffController.deleteSaleRecord");
-  Route.get("/user/:customer_id", "SaleRecordAffController.getSaleRecordsByUserId");
+  ).middleware("isAdmin");
+  Route.delete("/:id", "SaleRecordAffController.deleteSaleRecord").middleware("isAdmin");
+  Route.get("/user/:customer_id", "SaleRecordAffController.getSaleRecordsByUserId").middleware("isAdmin");
 }).prefix("/sale-records");
 
 Route.group(() => {
   Route.get("/daily", "SaleRecordAffController.getDailySales");
   Route.get("/all-daily", "SaleRecordAffController.getAllSales");
-}).prefix("/sales");
+}).prefix("/sales").middleware("isAdmin");
 
 Route.group(() => {
   Route.post("/", "SaleRecordHhbController.store");
