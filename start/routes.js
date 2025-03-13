@@ -184,7 +184,7 @@ Route.group(() => {
   Route.get("/:id", "PaymentTypeController.show");
   Route.put("/:id", "PaymentTypeController.update");
   Route.delete("/:id", "PaymentTypeController.destroy");
-}).prefix("/payment-types").middleware("isAdmin");
+}).prefix("/payment-types");
 
 Route.group(() => {
   Route.get("", "MenuTypeController.index");
