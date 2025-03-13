@@ -18,9 +18,14 @@ const Route = use("Route");
 const Helpers = use("Helpers");
 
 Route.get('/', 'HomeController.index')
+
 Route.post("/register", "AuthController.register");
 Route.post("/login", "AuthController.login");
+Route.post('forgot-password', 'AuthController.forgotPassword');
+Route.post('reset-password', 'AuthController.resetPassword');
 Route.post("/logout", "AuthController.logout").middleware(["auth"]);
+
+
 Route.get("/profile", "AuthController.profile").middleware(["auth"]);
 Route.put("/users/:id/role", "AuthController.updateRole").middleware("isAdmin");
 

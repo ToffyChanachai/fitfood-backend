@@ -1,9 +1,9 @@
 "use strict";
 
 const User = use("App/Models/User");
-// const PasswordReset = use('App/Models/PasswordReset')
-// const Mail = use('Mail')
-// const crypto = require('crypto')
+// const { validateAll } = use('Validator');
+// const Mail = use('Mail');
+// const Token = use('App/Models/Token');
 
 class AuthController {
   async index({ response }) {
@@ -146,45 +146,60 @@ class AuthController {
     });
   }
 
-  async changePassword({ request, response, auth }) {
-    const user = await auth.getUser(); // ดึงข้อมูลผู้ใช้ที่ล็อกอินอยู่
+  // async forgotPassword({ request, response }) {
+  //   const { email } = request.only(['email']);
+  
+  //   // ตรวจสอบว่าอีเมลที่กรอกมีอยู่ในฐานข้อมูลหรือไม่
+  //   const user = await User.findBy('email', email);
+  
+  //   if (!user) {
+  //     return response.status(404).json({ message: 'User with this email does not exist' });
+  //   }
+  
+  //   // สร้าง Token สำหรับการรีเซ็ตรหัสผ่าน
+  //   const token = await Token.create({
+  //     user_id: user.id,
+  //     type: 'reset_password',  // ใช้เพื่อแยกประเภทของ token
+  //     token: Math.random().toString(36).substring(7),  // สร้าง token แบบสุ่ม
+  //   });
+  
+  //   // ส่งอีเมลให้ผู้ใช้ด้วยลิงก์การรีเซ็ตรหัสผ่าน
+  //   await Mail.send('emails.reset_password', { token: token.token }, (message) => {
+  //     message.to(user.email)
+  //       .from('chantigo.chanachai@gmail.com')
+  //       .subject('Password Reset Request');
+  //   });
+  
+  //   return response.json({ message: 'Password reset link has been sent to your email.' });
+  // }
 
-    const { oldPassword, newPassword } = request.only([
-      "oldPassword",
-      "newPassword",
-    ]);
-
-    try {
-      // ตรวจสอบรหัสผ่านเก่าด้วย auth.attempt
-      await auth.attempt(user.username, oldPassword); // ลองใช้ username และ oldPassword เพื่อยืนยันตัวตน
-
-      // ตรวจสอบความยาวของรหัสผ่านใหม่ (ในที่นี้ตัวอย่างเป็นการตั้งข้อกำหนดว่าต้องมีอย่างน้อย 6 ตัวอักษร)
-      const rules = {
-        newPassword: "min:6",
-      };
-
-      const validation = await validate({ newPassword }, rules);
-      if (validation.fails()) {
-        return response
-          .status(400)
-          .json({
-            message: "New password must be at least 6 characters long.",
-          });
-      }
-
-      // อัปเดตข้อมูลรหัสผ่านใหม่ในฐานข้อมูล
-      user.password = await Hash.make(newPassword); // สร้าง hash สำหรับรหัสผ่านใหม่
-      await user.save();
-
-      return response
-        .status(200)
-        .json({ message: "Password updated successfully." });
-    } catch (error) {
-      return response
-        .status(400)
-        .json({ message: "Old password is incorrect." }); // ถ้า auth.attempt ล้มเหลว
-    }
-  }
+  // async resetPassword({ request, response }) {
+  //   const { token, password } = request.only(['token', 'password']);
+  
+  //   // ค้นหาข้อมูล token จากฐานข้อมูล
+  //   const resetToken = await Token.findBy('token', token);
+  
+  //   if (!resetToken || resetToken.type !== 'reset_password') {
+  //     return response.status(400).json({ message: 'Invalid or expired token' });
+  //   }
+  
+  //   // ค้นหาผู้ใช้ที่เกี่ยวข้องกับ token
+  //   const user = await User.find(resetToken.user_id);
+  
+  //   if (!user) {
+  //     return response.status(404).json({ message: 'User not found' });
+  //   }
+  
+  //   // รีเซ็ตรหัสผ่านของผู้ใช้
+  //   user.password = password;
+  //   await user.save();
+  
+  //   // ลบ token หลังจากใช้งานแล้ว
+  //   await resetToken.delete();
+  
+  //   return response.json({ message: 'Password has been reset successfully' });
+  // }
+  
 }
 
 module.exports = AuthController;
