@@ -77,7 +77,7 @@ Route.group(() => {
   Route.get("/:id", "CustomerController.show");
   Route.put("/:id", "CustomerController.update");
   Route.delete("/:id", "CustomerController.destroy");
-}).prefix("/customers").middleware("isAdmin");
+}).prefix("/customers");
 
 Route.group(() => {
   Route.get("", "CustomerHhbController.index");
@@ -85,19 +85,19 @@ Route.group(() => {
   Route.put("/:id", "CustomerHhbController.update");
   Route.delete("/:id", "CustomerHhbController.destroy");
   Route.put('/:id/delivery', 'CustomerHhbController.updateDelivery');
-}).prefix("/customers-hhb").middleware("isAdmin");
+}).prefix("/customers-hhb");
 
 Route.group(() => {
-  Route.post("/", "SaleRecordAffController.store");
+  Route.post("/", "SaleRecordAffController.store").middleware("isAdmin");
   Route.get("/", "SaleRecordAffController.index");
-  Route.put("/:id", "SaleRecordAffController.update");
+  Route.put("/:id", "SaleRecordAffController.update").middleware("isAdmin");
   Route.put(
     "/:id/payment-status",
     "SaleRecordAffController.updatePaymentStatus"
-  );
-  Route.delete("/:id", "SaleRecordAffController.deleteSaleRecord");
+  ).middleware("isAdmin");
+  Route.delete("/:id", "SaleRecordAffController.deleteSaleRecord").middleware("isAdmin");
   Route.get("/user/:customer_id", "SaleRecordAffController.getSaleRecordsByCustomerId");
-}).prefix("/sale-records").middleware("isAdmin");
+}).prefix("/sale-records");
 
 Route.group(() => {
   Route.get("/daily", "SaleRecordAffController.getDailySales");
@@ -105,16 +105,16 @@ Route.group(() => {
 }).prefix("/sales").middleware("isAdmin");
 
 Route.group(() => {
-  Route.post("/", "SaleRecordHhbController.store");
+  Route.post("/", "SaleRecordHhbController.store").middleware("isAdmin");
   Route.get("/", "SaleRecordHhbController.index");
-  Route.put("/:id", "SaleRecordHhbController.update");
+  Route.put("/:id", "SaleRecordHhbController.update").middleware("isAdmin");
   Route.put(
     "/:id/payment-status",
     "SaleRecordHhbController.updatePaymentStatus"
-  );
-  Route.delete("/:id", "SaleRecordHhbController.deleteSaleRecord");
+  ).middleware("isAdmin");
+  Route.delete("/:id", "SaleRecordHhbController.deleteSaleRecord").middleware("isAdmin");
   Route.get("/user/:customer_id", "SaleRecordHhbController.getSaleRecordsByCustomerId");
-}).prefix("/sale-records-hhb").middleware("isAdmin");
+}).prefix("/sale-records-hhb");
 
 Route.group(() => {
   Route.get("/daily", "SaleRecordHhbController.getDailySales");
@@ -123,136 +123,136 @@ Route.group(() => {
 
 Route.group(() => {
   Route.get("/", "PromotionTypeController.index");
-  Route.post("/", "PromotionTypeController.store");
+  Route.post("/", "PromotionTypeController.store").middleware("isAdmin");
   Route.get("/:id", "PromotionTypeController.show");
-  Route.put("/:id", "PromotionTypeController.update");
-  Route.delete("/:id", "PromotionTypeController.destroy");
-}).prefix("/promotion-types").middleware("isAdmin");
+  Route.put("/:id", "PromotionTypeController.update").middleware("isAdmin");
+  Route.delete("/:id", "PromotionTypeController.destroy").middleware("isAdmin");
+}).prefix("/promotion-types");
 
 Route.group(() => {
   Route.get("/", "ProgramController.index");
-  Route.post("/", "ProgramController.store");
+  Route.post("/", "ProgramController.store").middleware("isAdmin");
   Route.get("/:id", "ProgramController.show");
-  Route.put("/:id", "ProgramController.update");
-  Route.delete("/:id", "ProgramController.destroy");
-}).prefix("/programs").middleware("isAdmin");
+  Route.put("/:id", "ProgramController.update").middleware("isAdmin");
+  Route.delete("/:id", "ProgramController.destroy").middleware("isAdmin");
+}).prefix("/programs");
 
 Route.group(() => {
   Route.get("/", "PackageController.index");
-  Route.post("/", "PackageController.store");
+  Route.post("/", "PackageController.store").middleware("isAdmin");
   Route.get("/:id", "PackageController.show");
-  Route.put("/:id", "PackageController.update");
-  Route.delete("/:id", "PackageController.destroy");
-  Route.get("/sync-data", "PackageController.syncData");
-}).prefix("/packages").middleware("isAdmin");
+  Route.put("/:id", "PackageController.update").middleware("isAdmin");
+  Route.delete("/:id", "PackageController.destroy").middleware("isAdmin");
+  Route.get("/sync-data", "PackageController.syncData").middleware("isAdmin");
+}).prefix("/packages");
 
 Route.group(() => {
   Route.get("", "PackageTypeController.index");
-  Route.post("", "PackageTypeController.store");
+  Route.post("", "PackageTypeController.store").middleware("isAdmin");
   Route.get("/:id", "PackageTypeController.show");
-  Route.put("/:id", "PackageTypeController.update");
-  Route.delete("/:id", "PackageTypeController.destroy");
-}).prefix("/package-types").middleware("isAdmin");
+  Route.put("/:id", "PackageTypeController.update").middleware("isAdmin");
+  Route.delete("/:id", "PackageTypeController.destroy").middleware("isAdmin");
+}).prefix("/package-types");
 
 Route.group(() => {
   Route.get("", "ZoneDeliveryController.index");
-  Route.post("", "ZoneDeliveryController.store");
+  Route.post("", "ZoneDeliveryController.store").middleware("isAdmin");
   Route.get("/:id", "ZoneDeliveryController.show");
-  Route.put("/:id", "ZoneDeliveryController.update");
-  Route.delete("/:id", "ZoneDeliveryController.destroy");
-}).prefix("/zone-deliveries").middleware("isAdmin");
+  Route.put("/:id", "ZoneDeliveryController.update").middleware("isAdmin");
+  Route.delete("/:id", "ZoneDeliveryController.destroy").middleware("isAdmin");
+}).prefix("/zone-deliveries");
 
 Route.group(() => {
   Route.get("", "ZoneDeliveryTypeController.index");
-  Route.post("", "ZoneDeliveryTypeController.store");
+  Route.post("", "ZoneDeliveryTypeController.store").middleware("isAdmin");
   Route.get("/:id", "ZoneDeliveryTypeController.show");
-  Route.put("/:id", "ZoneDeliveryTypeController.update");
-  Route.delete("/:id", "ZoneDeliveryTypeController.destroy");
-}).prefix("/zone-delivery-types").middleware("isAdmin");
+  Route.put("/:id", "ZoneDeliveryTypeController.update").middleware("isAdmin");
+  Route.delete("/:id", "ZoneDeliveryTypeController.destroy").middleware("isAdmin");
+}).prefix("/zone-delivery-types");
 
 Route.group(() => {
   Route.get("", "SellerNameController.index");
-  Route.post("", "SellerNameController.store");
+  Route.post("", "SellerNameController.store").middleware("isAdmin");
   Route.get("/:id", "SellerNameController.show");
-  Route.put("/:id", "SellerNameController.update");
-  Route.delete("/:id", "SellerNameController.destroy");
-}).prefix("/seller-names").middleware("isAdmin");
+  Route.put("/:id", "SellerNameController.update").middleware("isAdmin");
+  Route.delete("/:id", "SellerNameController.destroy").middleware("isAdmin");
+}).prefix("/seller-names");
 
 Route.group(() => {
   Route.get("", "PaymentTypeController.index");
-  Route.post("", "PaymentTypeController.store");
+  Route.post("", "PaymentTypeController.store").middleware("isAdmin");
   Route.get("/:id", "PaymentTypeController.show");
-  Route.put("/:id", "PaymentTypeController.update");
-  Route.delete("/:id", "PaymentTypeController.destroy");
+  Route.put("/:id", "PaymentTypeController.update").middleware("isAdmin");
+  Route.delete("/:id", "PaymentTypeController.destroy").middleware("isAdmin");
 }).prefix("/payment-types");
 
 Route.group(() => {
   Route.get("", "MenuTypeController.index");
-  Route.post("", "MenuTypeController.store");
+  Route.post("", "MenuTypeController.store").middleware("isAdmin");
   Route.get("/:id", "MenuTypeController.show");
-  Route.put("/:id", "MenuTypeController.update");
-  Route.delete("/:id", "MenuTypeController.destroy");
-}).prefix("/menu-types").middleware("isAdmin");
+  Route.put("/:id", "MenuTypeController.update").middleware("isAdmin");
+  Route.delete("/:id", "MenuTypeController.destroy").middleware("isAdmin");
+}).prefix("/menu-types");
 
 Route.group(() => {
-  Route.get("/sync-data", "MealTypeController.syncData");
+  Route.get("/sync-data", "MealTypeController.syncData").middleware("isAdmin");
 
   Route.get("", "MealTypeController.index");
-  Route.post("", "MealTypeController.store");
+  Route.post("", "MealTypeController.store").middleware("isAdmin");
   Route.get("/:id", "MealTypeController.show");
-  Route.put("/:id", "MealTypeController.update");
-  Route.delete("/:id", "MealTypeController.destroy");
-}).prefix("/meal-types").middleware("isAdmin");
+  Route.put("/:id", "MealTypeController.update").middleware("isAdmin");
+  Route.delete("/:id", "MealTypeController.destroy").middleware("isAdmin");
+}).prefix("/meal-types");
 
 Route.group(() => {
-  Route.get("/sync-data", "MenuController.syncData");
+  Route.get("/sync-data", "MenuController.syncData").middleware("isAdmin");
 
   Route.get("", "MenuController.index");
-  Route.post("", "MenuController.store");
+  Route.post("", "MenuController.store").middleware("isAdmin");
   Route.get("/:id", "MenuController.show");
-  Route.put("/:id", "MenuController.update");
-  Route.delete("/:id", "MenuController.destroy");
+  Route.put("/:id", "MenuController.update").middleware("isAdmin");
+  Route.delete("/:id", "MenuController.destroy").middleware("isAdmin");
 
   Route.get("/uploads/*", async ({ response, params }) => {
     return response.download(Application.tmpPath("uploads", params[0]));
   });
-}).prefix("/menus").middleware("isAdmin");
+}).prefix("/menus");
 
 Route.group(() => {
-  Route.get("/sync-data", "AdditionalTypeController.syncData");
+  Route.get("/sync-data", "AdditionalTypeController.syncData").middleware("isAdmin");
 
   Route.get("", "AdditionalTypeController.index");
-  Route.post("", "AdditionalTypeController.store");
+  Route.post("", "AdditionalTypeController.store").middleware("isAdmin");
   Route.get("/:id", "AdditionalTypeController.show");
-  Route.put("/:id", "AdditionalTypeController.update");
-  Route.delete("/:id", "AdditionalTypeController.destroy");
-}).prefix("/additional-types").middleware("isAdmin");
+  Route.put("/:id", "AdditionalTypeController.update").middleware("isAdmin");
+  Route.delete("/:id", "AdditionalTypeController.destroy").middleware("isAdmin");
+}).prefix("/additional-types");
 
 Route.group(() => {
   Route.get("", "DeliveryRoundController.index");
-  Route.post("", "DeliveryRoundController.store");
+  Route.post("", "DeliveryRoundController.store").middleware("isAdmin");
   Route.get("/:id", "DeliveryRoundController.show");
-  Route.put("/:id", "DeliveryRoundController.update");
-  Route.delete("/:id", "DeliveryRoundController.destroy");
-}).prefix("/delivery-rounds").middleware("isAdmin");
+  Route.put("/:id", "DeliveryRoundController.update").middleware("isAdmin");
+  Route.delete("/:id", "DeliveryRoundController.destroy").middleware("isAdmin");
+}).prefix("/delivery-rounds");
 
 Route.group(() => {
-  Route.get("/sync-data", "ReceiveFoodController.syncData");
+  Route.get("/sync-data", "ReceiveFoodController.syncData").middleware("isAdmin");
 
   Route.get("", "ReceiveFoodController.index");
-  Route.post("", "ReceiveFoodController.store");
+  Route.post("", "ReceiveFoodController.store").middleware("isAdmin");
   Route.get("/:id", "ReceiveFoodController.show");
-  Route.put("/:id", "ReceiveFoodController.update");
-  Route.delete("/:id", "ReceiveFoodController.destroy");
-}).prefix("/receive-foods").middleware("isAdmin");
+  Route.put("/:id", "ReceiveFoodController.update").middleware("isAdmin");
+  Route.delete("/:id", "ReceiveFoodController.destroy").middleware("isAdmin");
+}).prefix("/receive-foods");
 
 Route.group(() => {
   Route.get("", "SelectFoodController.index");
-  Route.post("", "SelectFoodController.store");
+  Route.post("", "SelectFoodController.store").middleware("isAdmin");
   Route.get("/:id", "SelectFoodController.show");
-  Route.put("/:id", "SelectFoodController.update");
-  Route.delete("/:id", "SelectFoodController.destroy");
-}).prefix("/select-foods").middleware("isAdmin");
+  Route.put("/:id", "SelectFoodController.update").middleware("isAdmin");
+  Route.delete("/:id", "SelectFoodController.destroy").middleware("isAdmin");
+}).prefix("/select-foods");
 
 Route.group(() => {
   Route.get("/", "SetupMenuPhController.index");
