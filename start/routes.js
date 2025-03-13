@@ -181,6 +181,7 @@ Route.group(() => {
 Route.group(() => {
   Route.get("", "PaymentTypeController.index");
   Route.post("", "PaymentTypeController.store");
+  Route.get("/:id", "PaymentTypeController.show");
   Route.put("/:id", "PaymentTypeController.update");
   Route.delete("/:id", "PaymentTypeController.destroy");
 }).prefix("/payment-types");
