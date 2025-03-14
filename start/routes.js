@@ -33,9 +33,9 @@ Route.put("users/update-password", "AuthController.changePassword").middleware([
   "auth",
 ]);
 
-Route.get("/users", "AuthController.index");
-Route.delete("/users/:id", "UserController.destroy");
-Route.put("/users/:id/role", "AuthController.updateRole");
+Route.get("/users", "AuthController.index").middleware("isAdmin");
+Route.delete("/users/:id", "AuthController.destroy").middleware("isAdmin");
+Route.put("/users/:id/role", "AuthController.updateRole").middleware("isAdmin");
 // Route.post('/forgot-password', 'AuthController.forgotPassword')
 // Route.post('/reset-password', 'AuthController.resetPassword')
 
