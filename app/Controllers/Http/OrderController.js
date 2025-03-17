@@ -49,7 +49,7 @@ class OrderController {
       customer_id: customer.id, // เพิ่ม customer_id จากที่หาได้
       menu_type_id,
       status: "pending",
-      package_status: package_status || "calculate",
+      // package_status: package_status || "calculate",
     });
 
     return response.status(201).json({
