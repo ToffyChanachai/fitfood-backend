@@ -452,7 +452,7 @@ Route.group(() => {
 
 Route.get("/orders/date-range", "OrderController.getOrdersByDateRange").middleware("isAdmin");
 Route.get("/orders/user/:customer_id", "OrderController.getOrdersByCustomerId").middleware("isAdmin");
-Route.get('/orders', 'OrderController.getOrdersByDate').middleware("isAdmin");
+// Route.get('/orders', 'OrderController.getOrdersByDate').middleware("isAdmin");
 Route.put('/orders/:id', 'OrderController.updateQuantity').middleware("isAdmin");
 Route.delete('/orders/:id', 'OrderController.destroy').middleware("isAdmin");
 Route.post("/orders-add", "OrderController.storeAdd").middleware("isAdmin");
