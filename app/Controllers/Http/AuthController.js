@@ -16,18 +16,16 @@ class AuthController {
   }
 
   async register({ request, response }) {
-    const { firstname, lastname, username, email, password, role } =
-      request.only([
-        "firstname",
-        "lastname",
-        "username",
-        "email",
-        "password",
-        "role",
-      ]);
+    const { firstname, lastname, username, email, password } = request.only([
+      "firstname",
+      "lastname",
+      "username",
+      "email",
+      "password",
+    ]);
 
     // ตรวจสอบว่า role มีค่าหรือไม่ ถ้าไม่มีให้กำหนดเป็น "customer"
-    const userRole = role || "customer";
+    const userRole = "customer";
 
     // สร้าง user พร้อม role
     const user = await User.create({
@@ -81,10 +79,9 @@ class AuthController {
 
       // ใช้ auth.attempt() เพื่อตรวจสอบรหัสผ่านและสร้าง token
       const token = await auth.attempt(user.email, password);
-
-      return response.json({ token: token.token });
+      return response.json({ token: token.token, message: "Login successful" });
     } catch (error) {
-      return response.status(400).json({ message: "Invalid credentials" });
+      return response.status(400).json({ message: "Login failed" });
     }
   }
 
@@ -148,58 +145,57 @@ class AuthController {
 
   // async forgotPassword({ request, response }) {
   //   const { email } = request.only(['email']);
-  
+
   //   // ตรวจสอบว่าอีเมลที่กรอกมีอยู่ในฐานข้อมูลหรือไม่
   //   const user = await User.findBy('email', email);
-  
+
   //   if (!user) {
   //     return response.status(404).json({ message: 'User with this email does not exist' });
   //   }
-  
+
   //   // สร้าง Token สำหรับการรีเซ็ตรหัสผ่าน
   //   const token = await Token.create({
   //     user_id: user.id,
   //     type: 'reset_password',  // ใช้เพื่อแยกประเภทของ token
   //     token: Math.random().toString(36).substring(7),  // สร้าง token แบบสุ่ม
   //   });
-  
+
   //   // ส่งอีเมลให้ผู้ใช้ด้วยลิงก์การรีเซ็ตรหัสผ่าน
   //   await Mail.send('emails.reset_password', { token: token.token }, (message) => {
   //     message.to(user.email)
   //       .from('chantigo.chanachai@gmail.com')
   //       .subject('Password Reset Request');
   //   });
-  
+
   //   return response.json({ message: 'Password reset link has been sent to your email.' });
   // }
 
   // async resetPassword({ request, response }) {
   //   const { token, password } = request.only(['token', 'password']);
-  
+
   //   // ค้นหาข้อมูล token จากฐานข้อมูล
   //   const resetToken = await Token.findBy('token', token);
-  
+
   //   if (!resetToken || resetToken.type !== 'reset_password') {
   //     return response.status(400).json({ message: 'Invalid or expired token' });
   //   }
-  
+
   //   // ค้นหาผู้ใช้ที่เกี่ยวข้องกับ token
   //   const user = await User.find(resetToken.user_id);
-  
+
   //   if (!user) {
   //     return response.status(404).json({ message: 'User not found' });
   //   }
-  
+
   //   // รีเซ็ตรหัสผ่านของผู้ใช้
   //   user.password = password;
   //   await user.save();
-  
+
   //   // ลบ token หลังจากใช้งานแล้ว
   //   await resetToken.delete();
-  
+
   //   return response.json({ message: 'Password has been reset successfully' });
   // }
-  
 }
 
 module.exports = AuthController;

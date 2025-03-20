@@ -75,7 +75,7 @@ class TestCustomerController {
     });
 
     return response.status(201).json({
-      message: "Address added successfully",
+      message: "Customer Profile added successfully",
       customer,
     });
   }
@@ -153,7 +153,7 @@ class TestCustomerController {
     });
 
     return response.status(201).json({
-      message: "Address added successfully",
+      message: "Customer Profile added successfully",
       customer,
     });
   }

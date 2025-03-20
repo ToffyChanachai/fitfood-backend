@@ -277,24 +277,42 @@ class SaleRecordHhbController {
     }
   }
 
-  async index({ request, response }) {
+  async index({ auth, request, response }) {
     try {
-      // รับค่าเดือนจาก query parameter เช่น ?month=2025-03
-      const month = request.input("month");
-
+      const user = await auth.getUser(); // ดึงข้อมูล user ที่ล็อกอินอยู่
+  
+      // ถ้าเป็น customer ให้ดึงข้อมูลเฉพาะของตัวเอง
+      const customer = await Customer.query().where("user_id", user.id).first();
+  
+      if (!customer) {
+        return response.status(404).json({
+          message: "ไม่พบข้อมูลลูกค้าสำหรับบัญชีของคุณ",
+        });
+      }
+  
+      const customerId = customer.id; // ใช้ customer.id แทน customer_id
+      const month = request.input("month"); // รับค่าเดือนจาก query parameter เช่น ?month=2025-03
+  
       let query = SaleRecordHhb.query()
         .with("customer")
         .with("promotionType")
         .with("program")
         .with("package");
-
+  
+      // ถ้ามีการส่งค่าเดือนเข้ามา ให้กรองข้อมูลตามเดือน
       if (month) {
         query = query.whereRaw("TO_CHAR(created_at, 'YYYY-MM') = ?", [month]);
       }
-
-      const saleRecords = await query.fetch();
-
-      return response.status(200).json(saleRecords);
+  
+      // ถ้าเป็น admin ให้ดึงข้อมูลทั้งหมด
+      if (user.role === "admin") {
+        const saleRecords = await query.fetch();
+        return response.status(200).json(saleRecords);
+      } else {
+        // ถ้าเป็น customer ให้ดึงข้อมูลเฉพาะของตัวเอง
+        const saleRecords = await query.where("customer_id", customerId).fetch();
+        return response.status(200).json(saleRecords);
+      }
     } catch (error) {
       console.error("Error fetching sale records:", error);
       return response

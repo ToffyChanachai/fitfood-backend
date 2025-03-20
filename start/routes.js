@@ -27,7 +27,6 @@ Route.post("/logout", "AuthController.logout").middleware(["auth"]);
 
 
 Route.get("/profile", "AuthController.profile").middleware(["auth"]);
-Route.put("/users/:id/role", "AuthController.updateRole").middleware("isAdmin");
 
 Route.put("users/update-password", "AuthController.changePassword").middleware([
   "auth",
@@ -79,18 +78,18 @@ Route.get("/sync-google-sheet", "CustomerController.syncData");
 
 Route.group(() => {
   Route.get("", "CustomerController.index");
-  Route.get("/:id", "CustomerController.show");
+  // Route.get("/:id", "CustomerController.show");
   Route.put("/:id", "CustomerController.update");
   Route.delete("/:id", "CustomerController.destroy");
-}).prefix("/customers");
+}).prefix("/customers").middleware(["auth"]);
+
 
 Route.group(() => {
   Route.get("", "CustomerHhbController.index");
-  Route.get("/:id", "CustomerHhbController.show");
+  // Route.get("/:id", "CustomerHhbController.show");
   Route.put("/:id", "CustomerHhbController.update");
   Route.delete("/:id", "CustomerHhbController.destroy");
-  Route.put('/:id/delivery', 'CustomerHhbController.updateDelivery');
-}).prefix("/customers-hhb");
+}).prefix("/customers-hhb").middleware(["auth"]);
 
 Route.group(() => {
   Route.post("/", "SaleRecordAffController.store").middleware("isAdmin");
@@ -125,6 +124,8 @@ Route.group(() => {
   Route.get("/daily", "SaleRecordHhbController.getDailySales");
   Route.get("/all-daily", "SaleRecordHhbController.getAllSales");
 }).prefix("/sales-hhb").middleware("isAdmin");
+
+
 
 Route.group(() => {
   Route.get("/", "PromotionTypeController.index");
@@ -220,7 +221,7 @@ Route.group(() => {
 
   Route.get("/uploads/*", async ({ response, params }) => {
     return response.download(Application.tmpPath("uploads", params[0]));
-  });
+  }).middleware("isAdmin");
 }).prefix("/menus");
 
 Route.group(() => {
@@ -259,6 +260,7 @@ Route.group(() => {
   Route.delete("/:id", "SelectFoodController.destroy").middleware("isAdmin");
 }).prefix("/select-foods");
 
+
 Route.group(() => {
   Route.get("/", "SetupMenuPhController.index");
   Route.post("/", "SetupMenuPhController.store").middleware("isAdmin");
@@ -270,7 +272,7 @@ Route.group(() => {
     "SetupMenuPhController.getDayOfWeekFromDate"
   );
   Route.get("/menus-by-day/:date", "SetupMenuPhController.getMenusByDay");
-  Route.get("/menus-today", "SetupMenuPhController.getMenusByToDay");
+  // Route.get("/menus-today", "SetupMenuPhController.getMenusByToDay");
 
   Route.post("set-start-date", "SetupMenuPhController.setStartDate").middleware(
     "isAdmin"
@@ -423,7 +425,7 @@ Route.group(() => {
 }).prefix("setup-menu-diabete");
 
 Route.group(() => {
-  Route.get("", "OrderController.index");
+  // Route.get("", "OrderController.index");
   Route.post("", "OrderController.store");
     // Route.get("/:id", "SelectFoodController.show");
   // Route.put("/:id", "SelectFoodController.update");
@@ -433,7 +435,7 @@ Route.group(() => {
   .middleware(["auth"]);
 
 Route.group(() => {
-  Route.get("", "OrderHhbController.index");
+  // Route.get("", "OrderHhbController.index");
   Route.post("", "OrderHhbController.store");
   // Route.get("/:id", "SelectFoodController.show");
   // Route.put("/:id", "SelectFoodController.update");
@@ -442,11 +444,11 @@ Route.group(() => {
   .prefix("/order-hhb")
   .middleware(["auth"]);
 
-Route.group(() => {
-  Route.post("create-customer", "CustomerController.create").middleware([
-    "auth",
-  ]);
-}).prefix("/customer");
+// Route.group(() => {
+//   Route.post("create-customer", "CustomerController.create").middleware([
+//     "auth",
+//   ]);
+// }).prefix("/customer");
 
 Route.get("/orders/date-range", "OrderController.getOrdersByDateRange").middleware("isAdmin");
 Route.get("/orders/user/:customer_id", "OrderController.getOrdersByCustomerId").middleware("isAdmin");
@@ -470,11 +472,11 @@ Route.post("/order-hhb/update-status", "OrderHhbController.updateMultipleStatus"
 Route.get("/seller-names-sync-data", "SellerNameController.syncData").middleware("isAdmin");
 
 Route.group(() => {
-  Route.get("/orders", "OrderController.getOrdersByUserId").middleware(["auth"]);
+  Route.get("/orders-user", "OrderController.getOrdersByUserId").middleware(["auth"]);
 })
 
 Route.group(() => {
-  Route.get("/orders-hhb", "OrderHhbController.getOrdersByUserId").middleware(["auth"]);
+  Route.get("/orders-hhb-user", "OrderHhbController.getOrdersByUserId").middleware(["auth"]);
 })
 
 Route.group(() => {

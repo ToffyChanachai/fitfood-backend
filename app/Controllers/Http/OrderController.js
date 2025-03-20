@@ -53,6 +53,7 @@ class OrderController {
     });
 
     return response.status(201).json({
+      message: "Order successful",
       order,
     });
   }

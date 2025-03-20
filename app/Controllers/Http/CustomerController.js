@@ -6,27 +6,31 @@ const Database = use("Database");
 const GoogleSheetService = require("../../Services/CustomersGoogleSheetService");
 
 class CustomerController {
-  async index({ response }) {
-    try {
-      const customers = await Customer.all();
-
+  async index({ auth, response }) {
+    const user = await auth.getUser(); // ดึงข้อมูล user ที่ล็อกอินอยู่
+  
+    if (user.role === "admin") {
+      // ถ้าเป็น admin ให้ดึงข้อมูลทั้งหมด
+      const customers = await Customer.all();  // ดึงข้อมูลทั้งหมด
       return response.json(customers);
-    } catch (error) {
-      console.error(error);
-      return response.status(500).send("เกิดข้อผิดพลาด");
+    } else {
+      // ถ้าเป็น customer ให้ดึงเฉพาะของตัวเอง
+      const customers = await Customer.query().where("user_id", user.id).fetch(); // ดึงข้อมูลของตัวเอง
+      return response.json(customers);
     }
   }
+  
 
-  async show({ params, response }) {
-    try {
-      const customer = await Customer.findOrFail(params.id);
-      return response.json(customer);
-    } catch (error) {
-      return response
-        .status(404)
-        .json({ message: "Customer not found", error });
-    }
-  }
+  // async show({ params, response }) {
+  //   try {
+  //     const customer = await Customer.findOrFail(params.id);
+  //     return response.json(customer);
+  //   } catch (error) {
+  //     return response
+  //       .status(404)
+  //       .json({ message: "Customer not found", error });
+  //   }
+  // }
 
   // async getCustomerAddress({ params, response }) {
   //   try {
@@ -52,10 +56,16 @@ class CustomerController {
   //   }
   // }
 
-  async update({ params, request, response }) {
+  async update({ auth, params, request, response }) {
     try {
-      const customer = await Customer.findOrFail(params.id);
-
+      const user = await auth.getUser(); // ดึงข้อมูลผู้ใช้ที่ล็อกอิน
+      const customer = await Customer.findOrFail(params.id); // ดึงข้อมูลลูกค้าตาม ID
+  
+      // ถ้าเป็น customer ให้ตรวจสอบว่าเป็นข้อมูลของตัวเองหรือไม่
+      if (user.role !== "admin" && customer.user_id !== user.id) {
+        return response.status(403).json({ message: "You are not authorized to update this customer's data" });
+      }
+  
       const data = request.only([
         "email",
         "customer_id",
@@ -73,101 +83,59 @@ class CustomerController {
         "address_1",
         "address_2",
         "address_3",
-
         "delivery_address", // ✅ รวมการอัปเดตที่อยู่จัดส่ง
         "delivery_round",
         "deliver",
         "delivery_zone",
         "delivery_time",
       ]);
-
+  
+      // ตรวจสอบ gender หากมีการส่งค่าเข้ามา
       if (data.customer_gender) {
         const validGenders = ["male", "female", "other"];
         if (!validGenders.includes(data.customer_gender)) {
           return response.status(400).json({ message: "Invalid gender value" });
         }
       }
+  
+      // แปลงเวลา delivery_time หากมีการส่งค่าเข้ามา
       if (data.delivery_time) {
-        data.delivery_time = moment(data.delivery_time, "HH:mm").format(
-          "HH:mm"
-        );
+        data.delivery_time = moment(data.delivery_time, "HH:mm").format("HH:mm");
       }
-
-      // if (data.sellect_by) {
-      //   // เช็คค่าของ sellect_by เพื่อให้เป็นค่า enum ที่ถูกต้อง
-      //   const validSelectBy = ["customer", "aff"];
-      //   if (!validSelectBy.includes(data.sellect_by)) {
-      //     return response
-      //       .status(400)
-      //       .json({ message: "Invalid select_by value" });
-      //   }
-      // }
-
-      // // แปลง seller_name เป็น seller_name_id
-      // if (data.seller_name) {
-      //   const seller = await SellerName.findBy("name", data.seller_name);
-      //   if (seller) {
-      //     data.seller_name_id = seller.id;
-      //     delete data.seller_name; // ลบ seller_name ออกหลังจากแปลงเป็น seller_name_id
-      //   } else {
-      //     return response.status(400).json({ message: "Invalid seller_name" });
-      //   }
-      // }
-
-      // // แปลง zone_1, zone_2, zone_3 เป็น zone_id
-      // if (data.zone_1) {
-      //   const zone1 = await ZoneDelivery.findBy("name", data.zone_1);
-      //   if (zone1) {
-      //     data.zone_1 = zone1.id;
-      //   } else {
-      //     return response.status(400).json({ message: "Invalid zone_1" });
-      //   }
-      // }
-
-      // if (data.zone_2) {
-      //   const zone2 = await ZoneDelivery.findBy("name", data.zone_2);
-      //   if (zone2) {
-      //     data.zone_2 = zone2.id;
-      //   } else {
-      //     return response.status(400).json({ message: "Invalid zone_2" });
-      //   }
-      // }
-
-      // if (data.zone_3) {
-      //   const zone3 = await ZoneDelivery.findBy("name", data.zone_3);
-      //   if (zone3) {
-      //     data.zone_3 = zone3.id;
-      //   } else {
-      //     return response.status(400).json({ message: "Invalid zone_3" });
-      //   }
-      // }
-
+  
       // นำข้อมูลที่แปลงแล้วไป merge กับข้อมูลเดิม
       customer.merge(data);
-
+  
       // บันทึกการเปลี่ยนแปลง
       await customer.save();
-
+  
       return response.json(customer);
     } catch (error) {
-      return response
-        .status(500)
-        .json({ message: "Error updating customer", error });
+      console.error("Error updating customer:", error);
+      return response.status(500).json({ message: "Error updating customer", error: error.message });
     }
   }
-
-  async destroy({ params, response }) {
+  
+  async destroy({ auth, params, response }) {
     try {
-      const customer = await Customer.findOrFail(params.id);
+      const user = await auth.getUser(); // ดึงข้อมูลผู้ใช้ที่ล็อกอิน
+      const customer = await Customer.findOrFail(params.id); // ค้นหาลูกค้าตาม ID
+  
+      // ถ้าเป็น customer ให้ตรวจสอบว่าเป็นข้อมูลของตัวเองหรือไม่
+      if (user.role !== "admin" && customer.user_id !== user.id) {
+        return response.status(403).json({ message: "You are not authorized to delete this customer's data" });
+      }
+  
+      // ลบข้อมูลลูกค้า
       await customer.delete();
-
+  
       return response.json({ message: "Customer deleted successfully" });
     } catch (error) {
-      return response
-        .status(500)
-        .json({ message: "Error deleting customer", error });
+      console.error("Error deleting customer:", error);
+      return response.status(500).json({ message: "Error deleting customer", error: error.message });
     }
   }
+  
 
   // async getCustomersHHB({ response }) {
   //   try {
